@@ -1,5 +1,7 @@
 from collections import defaultdict
 from collections import OrderedDict
+import heapq
+
 add = lambda x, y: x + y
 
 # sort
@@ -54,6 +56,9 @@ for value in my_dict.values():
 
 for key, value in my_dict.items():
     print(key, value)
+
+# get the only element in dictionary
+(key, value) = list(my_dict.items())[0]
 
 # keys(): Returns a view object containing the keys of the dictionary.
 
@@ -286,6 +291,24 @@ items = [('apple', 3), ('banana', 2), ('orange', 5), ('pear', 4)]
 # Sort items based on the second element (value)
 sorted_items = sorted(items, key=lambda item: item[1])
 
+my_list = [4, 2, 9, 1, 5, 6]
+
+# Sort the list in descending order
+my_list.sort(reverse=True)
+# or use -x in lambda
+my_list.sort(key=lambda x: -x)
+
+sorted_list = sorted(my_list, reverse=True)
+
+# Example list of tuples
+my_list = [(1, 2), (3, 1), (5, 6), (4, 3)]
+
+# Sort the list of tuples based on the second element in descending order
+my_list.sort(key=lambda x: x[1], reverse=True)
+# -x
+my_list.sort(key=lambda x: -x[1])
+sorted_list = sorted(my_list, key=lambda x: x[1], reverse=True)
+
 # Create an OrderedDict from the sorted items
 ordered_dict = OrderedDict(sorted_items)
 
@@ -360,3 +383,55 @@ print(s.ljust(10, '-'))  # Output: "hello-----"
 
 s = "hello"
 print(s.rjust(10, '-'))  # Output: "-----hello"
+
+# min heap by default
+x = [5, 7, 9, 1, 3]
+heapq.heapify(x)
+
+heap = []
+heapq.heappush(heap, 3)
+smallest = heapq.heappushpop(heap, 6)
+
+smallest = heapq.heapreplace(heap, 2)
+largest = heapq.nlargest(3, [1, 2, 3, 4, 5])
+smallest = heapq.nsmallest(3, [1, 2, 3, 4, 5])
+
+data = [5, 7, 9, 1, 3]
+max_heap = [-x for x in data]
+heapq.heapify(max_heap)
+
+
+# static class methods in python
+class MyClass:
+    static_member = 42
+
+    @classmethod
+    def static_method(cls):
+        print("Static member:", cls.static_member)
+
+# access static and non static attributes in python
+class MyClass:
+    # Static member
+    static_member = "I am a static member"
+
+    def __init__(self, value):
+        self.instance_member = value
+
+    @classmethod
+    def modify_static_member(cls, new_value):
+        cls.static_member = new_value
+
+    def display(self):
+        # Accessing static member using cls
+        print("Static Member:", MyClass.static_member)
+        print("Instance Member:", self.instance_member)
+
+# private attributes in python
+class MyClass:
+    def __init__(self, value):
+        self._weak_private_attribute = value
+        self.__strong_private_attribute = value
+
+    def get_private_attribute(self):
+        return (self._private_attribute, self.__private_attribute)
+
