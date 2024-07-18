@@ -216,6 +216,11 @@ def dfs_topological_sort(graph):
 
 
 # backtracking pattern
+# The key point in backtracking is that you are looking 
+# for a solution by exploring various potential paths, 
+# which means you need to "unvisit" nodes when you 
+# backtrack to ensure they can be considered in different paths.
+# Removing nodes would allow them to be reconsidered
 def find_solution(candidate):
     pass
 

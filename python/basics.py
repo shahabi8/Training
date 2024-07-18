@@ -342,6 +342,34 @@ print(" ".join(words))  # Output: "Hello Python"
 # Find substring
 print(s.find("World"))  # Output: 8
 
+# compare strings lexicographically
+str1 = "apple"
+str2 = "banana"
+
+if str1 < str2:
+    print(f"{str1} is lexicographically smaller than {str2}")
+elif str1 > str2:
+    print(f"{str1} is lexicographically greater than {str2}")
+else:
+    print(f"{str1} is equal to {str2}")
+
+# compare two lists lexicographically
+def is_lexicographically_smaller(list1, list2):
+    return list1 < list2
+
+# Example usage
+list1 = ["apple", "banana", "cherry"]
+list2 = ["apple", "banana", "date"]
+
+result = is_lexicographically_smaller(list1, list2)
+
+
+
+id = s.find('/', starting_index)
+# '/' not found returns -1
+# better to use sting.split('/) if you want to
+# to process string based on a delimiter
+
 s = "hello world"
 print(s.rfind("o"))  # Output: 7
 

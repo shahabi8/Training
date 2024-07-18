@@ -180,6 +180,46 @@ def find_min_rotated_array(arr):
             right = mid
     return arr[left]
 
+def lower_bound(arr, target):
+    left, right = 0, len(arr)
+    while left < right:
+        mid = (left + right) // 2
+        if arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid
+    return left
+
+def upper_bound(arr, target):
+    left, right = 0, len(arr)
+    while left < right:
+        mid = (left + right) // 2
+        if arr[mid] <= target:
+            left = mid + 1
+        else:
+            right = mid
+    return left
+
+def lower_bound(arr, target):
+    return bisect.bisect_left(arr, target)
+
+def upper_bound(arr, target):
+    return bisect.bisect_right(arr, target)
+
+# find first element equal or less than target
+def search_right(i):
+    left = 0
+    right = len(candles) - 1
+    result = -1  # This will store the index of the largest element <= i
+    while left <= right:
+        mid = left + (right - left) // 2
+        if candles[mid] <= i:
+            result = mid  # Update result to the current mid
+            left = mid + 1  # Search in the right half
+        else:
+            right = mid - 1  # Search in the left half
+    return result
+
 # greater than or equal to the target.
 
 
