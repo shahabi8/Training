@@ -1,5 +1,7 @@
 
 from collections import deque
+from collections import defaultdict
+from collections import OrderedDict
 
 class ListNode:
     def __init__(self, val=0, next=None):
@@ -181,3 +183,90 @@ class Solution:
                 return ''
             trie.insert(st)
         return strs[0][:trie.find_prefix_size()]
+    
+# linklist for LRU cache
+# the trick for linklist is we defined two constant head and tail
+# so this helps us eliminate tons of corner cases, no need to check whether 
+# linklist is empty or not
+
+class Node:
+    def __init__(self, value = -1, next = None, prev = None):
+        self.value = value
+        self.next = next
+        self.prev = prev
+
+class linkList:
+
+    def __init__(self):
+        self.head = Node()
+        self.last = Node()
+        self.head.next = self.last
+        self.last.prev = self.head
+    
+    def add(self, node):
+        prev = self.last.prev
+        prev.next = node
+        node.prev = prev
+        node.next = self.last
+        self.last.prev = node
+
+    def remove(self, node):
+        prev = node.prev
+        next = node.next
+        prev.next = next
+        next.prev = prev
+
+    def move_to_right(self, node):
+        self.remove(node)
+        self.add(node)
+
+class LRUCache:
+
+    def __init__(self, capacity: int):
+        self.data = defaultdict(list)
+        self.sz = capacity
+        self.list = linkList()
+        
+
+    def get(self, key: int) -> int:
+        if key in self.data:
+            node = self.data[key][1]
+            self.list.move_to_right(node)
+            return self.data[key][0]
+        return -1
+        
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.data:
+            node = self.data[key][1]
+            self.list.move_to_right(node)
+            self.data[key][0] = value
+            return
+        node = Node(key)
+        self.data[key] = [value, node]
+        self.list.add(node)
+        if len(self.data) > self.sz:
+            node = self.list.head.next
+            key = node.value
+            del self.data[key]
+            self.list.remove(node)
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.dic = OrderedDict()
+
+    def get(self, key: int) -> int:
+        if key not in self.dic:
+            return -1
+
+        self.dic.move_to_end(key)
+        return self.dic[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.dic:
+            self.dic.move_to_end(key)
+
+        self.dic[key] = value
+        if len(self.dic) > self.capacity:
+            self.dic.popitem(False)

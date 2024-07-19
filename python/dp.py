@@ -80,3 +80,25 @@ def longest_common_substring(s1, s2):
                 dp[i][j] = 0
     return mx
 
+# given a word
+# so here we have a dp that dp[0] is true means that we can create empty string
+# by not using any of the words in dictionary
+# for each i we loop j from 0 to i to see if dp[j] is true meaning that this word is
+# in dic, we check if word[j: i] is also in dic and if so then dp[i] is true 
+# which means we can build word[:i] with words in dic
+words = ["cat","cats","catsdogcats","dog","dogcatsdog","hippopotamuses","rat","ratcatdogcat"]
+class Solution:
+    def findAllConcatenatedWordsInADict(self, words: List[str]) -> List[str]:
+        data, output = set(words), []
+        for word in words:
+            dp = [False] * (len(word) + 1)
+            dp[0] = True
+            for i in range(1, len(word) + 1):
+                for j in range(i):
+                    if dp[j] and word[j: i] in data and word[j: i] != word:
+                        dp[i] = True
+                        break
+            if dp[-1]:
+                output.append(word)
+        return output
+

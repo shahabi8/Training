@@ -164,3 +164,17 @@ def longestOnes(self, nums: List[int], k: int) -> int:
             k += 1 - nums[left]
             left += 1
     return right - left + 1
+
+# Given a string s, find the length of the longest substring without repeating characters.
+# In this code we have a map to keep track of previous chars and we need to check
+# if the repeating char is happening before left end of string or after
+class Solution:
+    def lengthOfLongestSubstring(self, s: str) -> int:
+        l, r, mx = 0, 0, 0
+        data = {}
+        for i in range(len(s)):
+            if s[i] in data:
+                l = l if l > data[s[i]] else data[s[i]] + 1
+            data[s[i]] = i
+            mx = max(mx, i - l + 1)
+        return mx
