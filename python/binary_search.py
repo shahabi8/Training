@@ -299,3 +299,33 @@ print(result)  # Output should be True
 target = 13
 result = search_matrix(matrix, target)
 print(result)  # Output should be False
+
+# binary search to find median of two sorted array
+# classic binary search and must be on smaller size array
+# using interval to find if two intervals are overlapping
+# part one is an index where two partions overlaps
+# left half of combined array comes from left of part1 and left of part2
+# same for right half
+# so part1 finds left and right half of first array and part2 finds left and right half of
+# second array and sum of two parts is equal to (sz1 + sz2 + 1) // 2
+def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+    if len(nums2) < len(nums1):
+        return self.findMedianSortedArrays(nums2, nums1)
+    sz1, sz2 = len(nums1), len(nums2)
+    left1, right1 = 0, sz1
+    while left1 <= right1:
+        part1 = left1 + (right1 - left1) // 2
+        part2 = (sz1 + sz2 + 1) // 2 - part1
+        l1 = nums1[part1 - 1] if part1 > 0 else -float('inf')
+        r1 = nums1[part1] if part1 < sz1 else float('inf')
+        l2 = nums2[part2 - 1] if part2 > 0 else -float('inf')
+        r2 = nums2[part2] if part2 < sz2 else float('inf')
+        if l1 <= r2 and l2 <= r1:
+            if (sz1 + sz2) % 2 == 0: 
+                return (max(l1, l2) + min(r1, r2)) / 2
+            return max(l1, l2)
+        elif r1 < l2:
+            left1 = part1 + 1
+        else:
+            right1 = part1 - 1
+    return 0.0

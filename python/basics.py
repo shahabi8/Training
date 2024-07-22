@@ -1,6 +1,7 @@
 from collections import defaultdict
 from collections import OrderedDict
 import heapq
+import sys
 
 add = lambda x, y: x + y
 
@@ -44,6 +45,8 @@ my_dict = {
     "city": "New York"
 }
 
+# for loop over dic is going to give use keys
+# for values you should do my_dict[key]
 for key in my_dict:
     print(key)
 
@@ -342,6 +345,23 @@ print(" ".join(words))  # Output: "Hello Python"
 # Find substring
 print(s.find("World"))  # Output: 8
 
+# sort string with sorted
+original_string = "amazon"
+sorted_characters = sorted(original_string)
+sorted_string = ''.join(sorted_characters)
+
+# in this function we can use tuple to convert sorted list of char
+# to tuple and use it as key in dic and also we can 
+# return data.values() and it will implicitly get converted 
+# to list(data.values())
+def func():
+    data = defaultdict(list)
+    output, tp = [], []
+    for s in strs:
+        new_s = tuple(sorted(s))
+        data[new_s].append(s)
+    return data.values()
+
 # compare strings lexicographically
 str1 = "apple"
 str2 = "banana"
@@ -462,4 +482,16 @@ class MyClass:
 
     def get_private_attribute(self):
         return (self._private_attribute, self.__private_attribute)
+    
+# max of list
+numbers = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]
+max_number = max(numbers)
+max_index = numbers.index(max_number)
 
+max_index, max_number = max(enumerate(numbers), key=lambda x: x[1])
+# enumerate creats list of tuples of (index, item)
+# [(index1, item1), (index2, item2), ...]
+
+# max int in pythons
+max_int = sys.maxsize
+float('inf')

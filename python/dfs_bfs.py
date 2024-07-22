@@ -249,3 +249,110 @@ def backtrack(candidate):
             backtrack(next_candidate)
             # backtrack
             remove(next_candidate)
+
+# bfs word ladder problem
+# below solutions show that for cases where size of words are lot smaller than number of words
+# how we can improve complexity by reducing search space by generating generalized string mappings
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        adj = defaultdict(list)
+        # o(m2 * n) --> n words * m and *m for creating new string
+        for word in wordList:
+            for j in range(len(word)):
+                adj[word[:j] + '*' + word[j + 1:]].append(word)
+
+        def BFS(word, visited, dq):
+            while len(dq) > 0:
+                node, level = dq.popleft()
+                visited.add(node)
+                for i in range(len(node)):
+                    pattern = node[:i] + '*' + node[i + 1:]
+                    for word in adj[pattern]:
+                        if word not in visited:
+                            visited.add(word)
+                            dq.append((word, level + 1))
+                        if word == endWord:
+                            return level + 1
+            return 0
+
+        dq = deque([(beginWord, 1)])
+        visited = set([beginWord])
+        return BFS(beginWord, visited, dq)
+    
+class Solution:
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        def diff(s1, s2):
+            cnt = 0
+            for i in range(len(s1)):
+                if s1[i] != s2[i]:
+                    cnt += 1
+                if cnt > 1:
+                    break
+            return cnt
+        adj = defaultdict(list)
+        # o (n ^ 2 * m) m to run diff
+        for i in range(len(wordList)):
+            for j in range(i + 1, len(wordList)):
+                if diff(wordList[i], wordList[j]) <= 1:
+                    adj[wordList[i]].append(wordList[j])
+                    adj[wordList[j]].append(wordList[i])
+        if beginWord not in adj:
+            for j in range(len(wordList)):
+                if diff(beginWord, wordList[j]) <= 1:
+                    adj[beginWord].append(wordList[j])
+        def BFS(word, visited, dq):
+            while len(dq) > 0:
+                node, level = dq.popleft()
+                visited.add(node)
+                for i in adj[node]:
+                    if i not in visited:
+                        visited.add(node)
+                        dq.append((i, level + 1))
+                    if i == endWord:
+                        return level + 1
+            return 0
+
+        dq = deque([(beginWord, 1)])
+        visited = set([beginWord])
+        return BFS(i, visited, dq)
+
+# bi directional BFS
+# first for this question we need to check if endWord is actually in wordList
+# otherwise this approach may return wrong results
+# The bfs need to be done for a queue that has smaller elements in it
+# this is an optimazation, and in BFS we should have a for loop to run 
+# over current number of element in queue, basically we need to run bfs level by level
+    def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
+        adj = defaultdict(list)
+        for word in wordList:
+            for j in range(len(word)):
+                adj[word[:j] + '*' + word[j + 1:]].append(word)
+        if endWord not in wordList:
+            return 0
+        def BFS(dq, visited, visited_other):
+            size = len(dq)
+            for _ in range(size):
+                node, level = dq.popleft()
+                for i in range(len(node)):
+                    pattern = node[:i] + '*' + node[i + 1:]
+                    for word in adj[pattern]:
+                        if word not in visited:
+                            visited[word] = level + 1
+                            dq.append((word, level + 1))
+                        if word in visited_other:
+                            return level + visited_other[word]
+            return None 
+
+        dqBegin = deque([(beginWord, 1)])
+        dqEnd = deque([(endWord, 1)])
+        visitedBegin = {beginWord: 1}
+        visitedEnd = {endWord: 1}
+        res = 0
+        while dqBegin and dqEnd:
+            if len(dqBegin) <= len(dqEnd):
+                res = BFS(dqBegin, visitedBegin, visitedEnd)
+            else:
+                res = BFS(dqEnd, visitedEnd, visitedBegin)
+            if res:
+                return res
+        return 0

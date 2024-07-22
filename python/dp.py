@@ -3,7 +3,8 @@ from collections import defaultdict
 
 #     Look for problems with overlapping subproblems and optimal substructure.
 #     Overlapping subproblems: The problem can be broken down into subproblems which are reused several times.
-#     Optimal substructure: The optimal solution to the problem can be constructed from the optimal solutions of its subproblems.
+#     Optimal substructure: The optimal solution to the problem can be constructed 
+# from the optimal solutions of its subproblems.
 
 # Define the state:
 
@@ -12,7 +13,8 @@ from collections import defaultdict
 
 # Formulate the state transition:
 
-#     Determine how to transition from one state to another. This usually involves finding a recurrence relation or formula to compute the state from its previous states.
+#     Determine how to transition from one state to another. This usually involves finding a recurrence relation
+#  or formula to compute the state from its previous states.
 
 # Base cases:
 

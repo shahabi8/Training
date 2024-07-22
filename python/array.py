@@ -1,3 +1,31 @@
+# general condition for overlapping intervals
+# is a0 <= b1 and b1 <= a1
+# the the merged = [min(a0, b0), max(a1, b1)]
+# now in sorted array condition above simplifies to
+# merged[-1][1] >= interval[i][0]
+# merged[-1][1] = max(merged[-1][1], interval[i][1])
+
+# interval problem
+#      s1 |            e1 |
+# s2|               e2 |
+# overlap happens when s1 <= e2 and s2 <= e1
+# interval will be min(e1, e2) - max(s1, s1) 
+
+def minAvailableDuration(self, slots1: List[List[int]], slots2: List[List[int]], duration: int) -> List[int]:
+    slots1.sort(), slots2.sort()
+    i, j = 0, 0
+    while i < len(slots1) and j < len(slots2):
+        s1, e1 = slots1[i] 
+        s2, e2 = slots2[j]
+        if s1 <= e2 and s2 <= e1 and min(e1, e2) - max(s1, s2) >= duration:
+            return [max(s1, s2), max(s1, s2) + duration]
+        if e1 < e2:
+            i += 1
+        else:
+            j += 1
+    return []
+
+
 def merge_intervals(intervals):
     if not intervals:
         return []
@@ -126,26 +154,6 @@ def move_zeros_to_end(nums):
     return nums
 
 
-# interval problem
-#      s1 |            e1 |
-# s2|               e2 |
-# overlap happens when s1 <= e2 and s2 <= e1
-# interval will be min(e1, e2) - max(s1, s1) 
-
-def minAvailableDuration(self, slots1: List[List[int]], slots2: List[List[int]], duration: int) -> List[int]:
-    slots1.sort(), slots2.sort()
-    i, j = 0, 0
-    while i < len(slots1) and j < len(slots2):
-        s1, e1 = slots1[i] 
-        s2, e2 = slots2[j]
-        if s1 <= e2 and s2 <= e1 and min(e1, e2) - max(s1, s2) >= duration:
-            return [max(s1, s2), max(s1, s2) + duration]
-        if e1 < e2:
-            i += 1
-        else:
-            j += 1
-    return []
-
 #sliding window
 # idea in this sliding window is that when r hit zero we and beyond the 
 # number of allowable zeros in subarray we move left, this mean once, the 
@@ -178,3 +186,26 @@ class Solution:
             data[s[i]] = i
             mx = max(mx, i - l + 1)
         return mx
+
+# Trapping rain water
+# For each element in the array, we find the maximum level of water
+# it can trap after the rain, which is equal to the minimum of 
+# maximum height of bars on both the sides minus its own height.
+
+# for each element: min(max_height_left, max_height_right) - height[i]
+# so brute force is like this
+    def trap(self, height):
+        ans = 0
+        size = len(height)
+        for i in range(1, size - 1):
+            left_max = 0
+            right_max = 0
+            # Search the left part for max bar size
+            for j in range(i, -1, -1):
+                left_max = max(left_max, height[j])
+            # Search the right part for max bar size
+            for j in range(i, size):
+                right_max = max(right_max, height[j])
+            ans += min(left_max, right_max) - height[i]
+        return ans
+# to improve this solution we can basically store left_max and right_max
