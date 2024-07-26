@@ -104,3 +104,61 @@ class Solution:
                 output.append(word)
         return output
 
+# we can generate all substrings in o(n2)
+# substrings are 1 with length n + 2 for length n - 1 and so on
+#         for start in range(len(s)):
+#             for end in range(start, len(s)):
+
+# or we can get sunstrings length base
+        # for length in range(len(s), 0, -1):
+        #     for start in range(len(s) - length + 1):
+
+# for dp the idea is instead of checking if any of the above substrings 
+# are palindrome we use existing knowledge from previous substrings so that
+# we can check substring palindrome in o(1)
+# in our dp table i and j means substring between index i and index j
+# for palindrome substrings of size 1 and 2 the process is simple.
+# for each substring of length diff we know our start index i
+# we find our end index j = i + diff
+# now if previous string at i + 1, j - 1 is palindrom so our nes string is palindrome too
+
+def longestPalindrome(self, s: str) -> str:
+    n = len(s)
+    dp = [[0] * (n) for i in range(n)]
+    mx = 0
+    output = [0, 0]
+    for i in range(n):
+        dp[i][i] = 1
+        if i < n - 1:
+            if s[i] == s[i + 1]:
+                dp[i][i + 1] = 1
+                output = [i, i + 1]
+
+    for diff in range(2, n):
+        for i in range(n - diff):
+            j = i + diff
+            if s[i] == s[j] and dp[i + 1][j - 1]:
+                dp[i][j] = 1
+                output = [i, j]
+
+    return s[output[0]: output[1] + 1]
+
+# sum of subarrays
+# data in dp contains sum of previous length of subarrays
+
+def maxSubArray(self, nums: List[int]) -> int:
+    n = len(nums)
+    if n == 0: return 0
+    mx = nums[0]
+    dp = []
+    for i in nums:
+        dp.append(i)
+        mx = max(mx, i)
+
+    for length in range(1, n):
+        for start in range(n - length):
+            end = start + length
+            dp[start] = dp[start] + nums[end]
+            mx = max(dp[start], mx)
+    return mx
+

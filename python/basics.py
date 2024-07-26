@@ -1,8 +1,9 @@
 from collections import defaultdict
 from collections import OrderedDict
+from collections import deque
 import heapq
 import sys
-
+import random
 add = lambda x, y: x + y
 
 # sort
@@ -37,6 +38,19 @@ list(('cat', 'dog', 5))
 
 list('hello')
 # ['h', 'e', 'l', 'l', 'o']
+
+# get last item and rest from list
+path_vec = ['a','b','c']
+ *dirs, last_item = path_vec
+
+# copy one list to another
+balance = ['1','2','3']
+self.balance = balance[:]
+
+# create list of keys from dic
+dirs = defaultdict()
+files = defaultdict()
+output = list(files) + list(dirs)
 
 #Iterating Through Keys:
 my_dict = {
@@ -221,6 +235,9 @@ names = [("Alice", "Math"), ("Bob", "English"), ("Alice", "English"), ("Bob", "M
 group_dict = defaultdict(list)
 for name, subject in names:
     group_dict[name].append(subject)
+
+# dic of dic of string
+defaultdict(lambda: defaultdict(str))
 
 ordered_dict = OrderedDict()
 
@@ -448,6 +465,9 @@ data = [5, 7, 9, 1, 3]
 max_heap = [-x for x in data]
 heapq.heapify(max_heap)
 
+# Get the top (smallest/largest) element of the heap
+top_element = max_heap[0]
+
 
 # static class methods in python
 class MyClass:
@@ -495,3 +515,69 @@ max_index, max_number = max(enumerate(numbers), key=lambda x: x[1])
 # max int in pythons
 max_int = sys.maxsize
 float('inf')
+
+#deque
+d = deque([1, 2, 3, 4, 5])
+d.append(6)
+print(d)  # deque([1, 2, 3, 4, 5, 6])
+
+# Append to the left
+d.appendleft(0)
+print(d)  # deque([0, 1, 2, 3, 4, 5, 6])
+
+# Pop from the right
+d.pop()
+print(d)  # deque([0, 1, 2, 3, 4, 5])
+
+# Pop from the left
+d.popleft()
+print(d)  # deque([1, 2, 3, 4, 5])
+
+# Extend on the right
+d.extend([6, 7])
+print(d)  # deque([1, 2, 3, 4, 5, 6, 7])
+
+# Extend on the left
+d.extendleft([-1, -2])
+print(d)  # deque([-2, -1, 1, 2, 3, 4, 5, 6, 7])
+
+# Rotate the deque
+d.rotate(2)
+print(d)  # deque([6, 7, -2, -1, 1, 2, 3, 4, 5])
+
+# Clear the deque
+d.clear()
+print(d)  # deque([])
+
+# Copy the deque
+d = deque([1, 2, 3])
+d2 = d.copy()
+
+from sortedcontainers import SortedDict, SortedList
+sd = SortedDict()
+sl = SortedList()
+sd['apple'] = 5
+sd['cherry'] = 2
+sd.pop('cherry')
+sl.add(10)
+sl.add(5)
+sl.remove(10)
+for key, sl in sd.items():
+    print(f"{key}: {list(sl)}")
+# Custom key function to sort by the length of the string
+sl = SortedList(key=len)
+sl = SortedList(key=lambda x: len(x))
+# no custom sorting for sortedDict
+
+# defining global variable
+cnt = 0
+# Define the function that modifies the global variable
+def match_orders(order, backlog, functor, order_backlog):
+    global cnt
+    # Example logic for the function
+    cnt += 1
+
+# Generate a random integer between 1 and 100 (inclusive)
+random_number = random.randint(1, 100)
+# floating point between 0 and 100 but not inclusive
+random_number = 100 * random.random()

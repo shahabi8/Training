@@ -41,3 +41,4 @@ class Solution:
         for i in nums:
             sm += Solution.find_divisor(i)
         return sm
+    
