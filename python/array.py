@@ -209,3 +209,33 @@ class Solution:
             ans += min(left_max, right_max) - height[i]
         return ans
 # to improve this solution we can basically store left_max and right_max
+
+
+# how to improve this solution from o(n^3) to o(N^2)
+# given arrays prices and profits, return max profits when 
+# prices[i] < prices[j] < prices[k] and i < j < k
+
+def maxProfit(self, prices: List[int], profits: List[int]) -> int:
+    n = len(prices)
+    for i in range(n):
+        for j in range(i + 1, n):
+            for k in range(j + 1, n):
+                if prices[i] < prices[j] < prices[k]:
+                    mx = max(prices[i] + prices[j] + prices[k], mx)
+    return mx
+
+# split the problem to comparison of 2 nums and record results for it
+# and then another round to compare recorded results with the third item
+def maxProfit(self, prices: List[int], profits: List[int]) -> int:
+    n = len(prices)
+    max_profit = [-1] * n
+    mx = -1
+    for i in range(n):
+        for j in range(i + 1, n):
+            if prices[i] < prices[j]:
+                max_profit[j] = max(max_profit[j], profits[i] + profits[j])
+    for i in range(n - 1, -1, -1):
+        for j in range(i - 1, -1, -1):
+            if prices[i] > prices[j] and max_profit[j] != -1:
+                mx = max(mx, max_profit[j] + profits[i])
+    return mx

@@ -1,3 +1,175 @@
+from abc import ABC, abstractmethod
+
+# adapter
+# The Adapter Pattern, also known as the Wrapper Pattern, is a structural design pattern 
+# that allows objects with incompatible interfaces to work together. The adapter pattern 
+# acts as a bridge between two incompatible interfaces by providing a way for classes to 
+# interact that otherwise could not due to interface mismatches.
+# Key Concepts
+
+#     Target Interface: The interface that the client expects.
+#     Adaptee: The existing interface that needs to be adapted.
+#     Adapter: The class that bridges the gap between the Target 
+#     and the Adaptee by implementing the Target interface and delegating 
+#     calls to an instance of the Adaptee.
+class TargetInterface(ABC):
+    @abstractmethod
+    def connect(self):
+        pass
+
+class EuropeanPlug:
+    def plug_in(self):
+        return "European plug connected"
+
+class USASocket:
+    def connect(self):
+        return "USA socket connected"
+
+class Adapter(TargetInterface):
+    def __init__(self, plug):
+        self.plug = plug
+
+    def connect(self):
+        return self.plug.plug_in()
+
+# Usage
+european_plug = EuropeanPlug()
+adapter = Adapter(european_plug)
+print(adapter.connect())  # Output: European plug connected
+
+
+#Bridge Pattern
+class DrawingAPI:
+    def draw_circle(self, x, y, radius):
+        pass
+
+class DrawingAPI1(DrawingAPI):
+    def draw_circle(self, x, y, radius):
+        print(f"API1.circle at {x}:{y} radius {radius}")
+
+class DrawingAPI2(DrawingAPI):
+    def draw_circle(self, x, y, radius):
+        print(f"API2.circle at {x}:{y} radius {radius}")
+
+class Circle:
+    def __init__(self, x, y, radius, drawing_api):
+        self._x = x
+        self._y = y
+        self._radius = radius
+        self._drawing_api = drawing_api
+
+    def draw(self):
+        self._drawing_api.draw_circle(self._x, self._y, self._radius)
+
+    def scale(self, pct):
+        self._radius *= pct
+
+# Usage
+circle1 = Circle(1, 2, 3, DrawingAPI1())
+circle2 = Circle(5, 7, 11, DrawingAPI2())
+
+circle1.draw()  # Output: API1.circle at 1:2 radius 3
+circle2.draw()  # Output: API2.circle at 5:7 radius 11
+
+# Composite Pattern
+# component is good to have when we expect leaf class to have specific
+# operation method implemented, however we can directly pass leaf to 
+# composite methods
+class Component(ABC):
+    @abstractmethod
+    def operation(self):
+        pass
+
+class Leaf(Component):
+    def operation(self):
+        print("Leaf")
+
+class Composite(Component):
+    def __init__(self):
+        self._children = []
+
+    def add(self, component: Component):
+        self._children.append(component)
+
+    def remove(self, component: Component):
+        self._children.remove(component)
+
+    def operation(self):
+        for child in self._children:
+            child.operation()
+
+# Usage
+leaf1 = Leaf()
+leaf2 = Leaf()
+composite = Composite()
+composite.add(leaf1)
+composite.add(leaf2)
+composite.operation()
+
+
+# Decorator Pattern
+class Component:
+    def operation(self):
+        pass
+
+class ConcreteComponent(Component):
+    def operation(self):
+        return "ConcreteComponent"
+
+class Decorator(Component):
+    def __init__(self, component: Component):
+        self._component = component
+
+    def operation(self):
+        return self._component.operation()
+
+class ConcreteDecoratorA(Decorator):
+    def operation(self):
+        return f"ConcreteDecoratorA({self._component.operation()})"
+
+class ConcreteDecoratorB(Decorator):
+    def operation(self):
+        return f"ConcreteDecoratorB({self._component.operation()})"
+
+# Usage
+component = ConcreteComponent()
+decorator1 = ConcreteDecoratorA(component)
+decorator2 = ConcreteDecoratorB(decorator1)
+
+print(decorator2.operation())  # Output: ConcreteDecoratorB(ConcreteDecoratorA(ConcreteComponent))
+
+
+#facade
+class CPU:
+    def freeze(self):
+        print("CPU freeze")
+
+    def jump(self, position):
+        print(f"CPU jump to {position}")
+
+    def execute(self):
+        print("CPU execute")
+
+class Memory:
+    def load(self, position, data):
+        print(f"Memory load data at {position}")
+
+class HardDrive:
+    def read(self, lba, size):
+        return "HardDrive data"
+
+class ComputerFacade:
+    def __init__(self):
+        self.cpu = CPU()
+        self.memory = Memory()
+        self.hard_drive = HardDrive()
+
+    def start(self):
+        self.cpu.freeze()
+        self.memory.load(0, self.hard_drive.read(0, 1024))
+        self.cpu.jump(0)
+        self.cpu.execute()
+
 # Singleton Pattern
 class Singleton:
     _instance = None # class static attribute
@@ -14,29 +186,109 @@ singleton2 = Singleton()
 print(singleton1 is singleton2)  # Output: True
 
 # Factory Pattern
-class Dog:
+class Animal(ABC):
+    @abstractmethod
+    def speak(self):
+        pass
+class Dog(Animal):
     def speak(self):
         return "Woof!"
+    
+    def fetch(self):
+        return "Fetching!"
 
-class Cat:
+class Cat(Animal):
     def speak(self):
         return "Meow!"
+    
+    def scratch(self):
+        return "Scratching!"
 
 class AnimalFactory:
-    def create_animal(self, animal_type):
-        if animal_type == "dog":
-            return Dog()
-        elif animal_type == "cat":
-            return Cat()
+    def create_animal(self, animal_class):
+        return animal_class()
 
 # Usage
 factory = AnimalFactory()
-dog = factory.create_animal("dog")
-cat = factory.create_animal("cat")
-
+dog = factory.create_animal(Dog)
 print(dog.speak())  # Output: Woof!
-print(cat.speak())  # Output: Meow!
+print(dog.fetch())  # Output: Fetching!
 
+cat = factory.create_animal(Cat)
+print(cat.speak())  # Output: Meow!
+print(cat.scratch())  # Output: Scratching!
+
+# Flyweight Pattern
+# The Flyweight Pattern is a structural design pattern used to minimize 
+# memory usage or computational expenses by sharing as much data as 
+# possible with similar objects. It's particularly useful when a large 
+# number of objects need to be created and managed.
+
+# A common use case for the Flyweight Pattern is in graphical applications 
+# where many similar objects need to be created, such as rendering a large 
+# number of characters in a text editor or graphical shapes in a drawing application.
+class Flyweight:
+    def __init__(self, shared_state):
+        self.shared_state = shared_state
+
+    def operation(self, unique_state):
+        print(f"Flyweight: Shared ({self.shared_state}) and unique ({unique_state}) state.")
+
+class FlyweightFactory:
+    _flyweights = {}
+
+    @classmethod
+    def get_flyweight(cls, shared_state):
+        if shared_state not in cls._flyweights:
+            cls._flyweights[shared_state] = Flyweight(shared_state)
+        return cls._flyweights[shared_state]
+    
+class context:
+    def __init__(self, flyweight, unique_state):
+        self.flyweight = flyweight
+        self.unique_state = unique_state
+    
+    def operation(self):
+        self.flyweight.operation(self.unique_state)
+
+# Usage
+factory = FlyweightFactory()
+
+flyweight1 = factory.get_flyweight("shared state 1")
+flyweight2 = factory.get_flyweight("shared state 1")
+flyweight3 = factory.get_flyweight("shared state 2")
+
+# Proxy Pattern
+class RealSubject:
+    def request(self):
+        print("RealSubject: Handling request.")
+
+class Proxy:
+    def __init__(self, real_subject):
+        self._real_subject = real_subject
+
+    def request(self):
+        if self.check_access():
+            self._real_subject.request()
+            self.log_access()
+
+    def check_access(self):
+        print("Proxy: Checking access before firing a real request.")
+        return True
+
+    def log_access(self):
+        print("Proxy: Logging the time of request.")
+
+# Usage
+real_subject = RealSubject()
+proxy = Proxy(real_subject)
+proxy.request()
+# Output:
+# Proxy: Checking access before firing a real request.
+# RealSubject: Handling request.
+# Proxy: Logging the time of request.
+
+# observer
 
 class Subject:
     def __init__(self):
@@ -100,88 +352,8 @@ context.execute_strategy("some data")  # Output: Strategy A executed with some d
 context.set_strategy(ConcreteStrategyB())
 context.execute_strategy("other data")  # Output: Strategy B executed with other data
 
-# Decorator Pattern
-class Component:
-    def operation(self):
-        pass
 
-class ConcreteComponent(Component):
-    def operation(self):
-        return "ConcreteComponent"
 
-class Decorator(Component):
-    def __init__(self, component: Component):
-        self._component = component
-
-    def operation(self):
-        return self._component.operation()
-
-class ConcreteDecoratorA(Decorator):
-    def operation(self):
-        return f"ConcreteDecoratorA({self._component.operation()})"
-
-class ConcreteDecoratorB(Decorator):
-    def operation(self):
-        return f"ConcreteDecoratorB({self._component.operation()})"
-
-# Usage
-component = ConcreteComponent()
-decorator1 = ConcreteDecoratorA(component)
-decorator2 = ConcreteDecoratorB(decorator1)
-
-print(decorator2.operation())  # Output: ConcreteDecoratorB(ConcreteDecoratorA(ConcreteComponent))
-
-# adapter
-class EuropeanPlug:
-    def plug_in(self):
-        return "European plug connected"
-
-class USASocket:
-    def connect(self):
-        return "USA socket connected"
-
-class Adapter:
-    def __init__(self, plug):
-        self.plug = plug
-
-    def connect(self):
-        return self.plug.plug_in()
-
-# Usage
-european_plug = EuropeanPlug()
-adapter = Adapter(european_plug)
-print(adapter.connect())  # Output: European plug connected
-
-#facade
-class CPU:
-    def freeze(self):
-        print("CPU freeze")
-
-    def jump(self, position):
-        print(f"CPU jump to {position}")
-
-    def execute(self):
-        print("CPU execute")
-
-class Memory:
-    def load(self, position, data):
-        print(f"Memory load data at {position}")
-
-class HardDrive:
-    def read(self, lba, size):
-        return "HardDrive data"
-
-class ComputerFacade:
-    def __init__(self):
-        self.cpu = CPU()
-        self.memory = Memory()
-        self.hard_drive = HardDrive()
-
-    def start(self):
-        self.cpu.freeze()
-        self.memory.load(0, self.hard_drive.read(0, 1024))
-        self.cpu.jump(0)
-        self.cpu.execute()
 
 # Usage
 computer = ComputerFacade()
@@ -298,124 +470,6 @@ context.request()  # Output: State A handling request
 
 context.set_state(state_b)
 context.request()  # Output: State B handling request
-
-#Bridge Pattern
-class DrawingAPI:
-    def draw_circle(self, x, y, radius):
-        pass
-
-class DrawingAPI1(DrawingAPI):
-    def draw_circle(self, x, y, radius):
-        print(f"API1.circle at {x}:{y} radius {radius}")
-
-class DrawingAPI2(DrawingAPI):
-    def draw_circle(self, x, y, radius):
-        print(f"API2.circle at {x}:{y} radius {radius}")
-
-class Circle:
-    def __init__(self, x, y, radius, drawing_api):
-        self._x = x
-        self._y = y
-        self._radius = radius
-        self._drawing_api = drawing_api
-
-    def draw(self):
-        self._drawing_api.draw_circle(self._x, self._y, self._radius)
-
-    def scale(self, pct):
-        self._radius *= pct
-
-# Usage
-circle1 = Circle(1, 2, 3, DrawingAPI1())
-circle2 = Circle(5, 7, 11, DrawingAPI2())
-
-circle1.draw()  # Output: API1.circle at 1:2 radius 3
-circle2.draw()  # Output: API2.circle at 5:7 radius 11
-
-# Composite Pattern
-class Component:
-    def operation(self):
-        pass
-
-class Leaf(Component):
-    def operation(self):
-        print("Leaf")
-
-class Composite(Component):
-    def __init__(self):
-        self._children = []
-
-    def add(self, component: Component):
-        self._children.append(component)
-
-    def remove(self, component: Component):
-        self._children.remove(component)
-
-    def operation(self):
-        for child in self._children:
-            child.operation()
-
-# Usage
-leaf1 = Leaf()
-leaf2 = Leaf()
-composite = Composite()
-composite.add(leaf1)
-composite.add(leaf2)
-composite.operation()
-
-# Flyweight Pattern
-class Flyweight:
-    def __init__(self, shared_state):
-        self.shared_state = shared_state
-
-    def operation(self, unique_state):
-        print(f"Flyweight: Shared ({self.shared_state}) and unique ({unique_state}) state.")
-
-class FlyweightFactory:
-    _flyweights = {}
-
-    @classmethod
-    def get_flyweight(cls, shared_state):
-        if shared_state not in cls._flyweights:
-            cls._flyweights[shared_state] = Flyweight(shared_state)
-        return cls._flyweights[shared_state]
-
-# Usage
-factory = FlyweightFactory()
-
-flyweight1 = factory.get_flyweight("shared state 1")
-flyweight2 = factory.get_flyweight("shared state 1")
-flyweight3 = factory.get_flyweight("shared state 2")
-
-# Proxy Pattern
-class RealSubject:
-    def request(self):
-        print("RealSubject: Handling request.")
-
-class Proxy:
-    def __init__(self, real_subject):
-        self._real_subject = real_subject
-
-    def request(self):
-        if self.check_access():
-            self._real_subject.request()
-            self.log_access()
-
-    def check_access(self):
-        print("Proxy: Checking access before firing a real request.")
-        return True
-
-    def log_access(self):
-        print("Proxy: Logging the time of request.")
-
-# Usage
-real_subject = RealSubject()
-proxy = Proxy(real_subject)
-proxy.request()
-# Output:
-# Proxy: Checking access before firing a real request.
-# RealSubject: Handling request.
-# Proxy: Logging the time of request.
 
 # Chain of Responsibility Pattern
 

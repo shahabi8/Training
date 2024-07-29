@@ -162,3 +162,22 @@ def maxSubArray(self, nums: List[int]) -> int:
             mx = max(dp[start], mx)
     return mx
 
+# this is an example shows how to use larger dp to manage edge cases
+
+# The subarray consists of exactly 2, equal elements. For example, the subarray [2,2] is good.
+# The subarray consists of exactly 3, equal elements. For example, the subarray [4,4,4] is good.
+# The subarray consists of exactly 3 consecutive increasing elements, that is, the difference 
+# between adjacent elements is 1. For example, the subarray [3,4,5] is good,
+# but the subarray [1,3,5] is not.
+
+def validPartition(self, nums: List[int]) -> bool:
+    n = len(nums)
+    dp = [True] + [False] * n
+    for i in range(n):
+        dp_id = i + 1
+        if i > 1 and nums[i - 2] == nums[i - 1] == nums[i] and dp[dp_id - 3] or \
+            i > 1 and nums[i - 2] + 1 == nums[i - 1] and nums[i - 1] + 1 == nums[i] and dp[dp_id - 3] or \
+            i > 0 and nums[i - 1] == nums[i] and dp[dp_id - 2]:
+            dp[dp_id] = True
+    return dp[-1]
+

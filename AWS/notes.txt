@@ -1,0 +1,54 @@
+Infrastructure as a Service (IaaS) allows organizations to utilize AWS instead of 
+owning and operating their own datacenter. You can simply rent VMs or physical 
+servers from AWS.
+
+
+The Platform as a Service (PaaS) on the other hand removes the need for your
+organization to manage the underlying platforms like a database, streaming services, etc. 
+This allows you to focus on the deployment and management
+of your core applications and not worry about the IaaS and PaaS layers.
+
+The Amazon Web Services Infrastructure consists of four primary areas which are a combination of IaaS and PaaS:
+
+    Compute (EC2, LightSail, ECS, Lambda, Batch)
+    Storage (EBS, EFS, S3, Glacier, Storage Gateway, Storage Migration Services)
+    Database (RDS, Redshift)
+    Network (CloudFront, VPC, Direct Connect, Load Balancing, Route 53)
+
+Compute(EC2): This is where you create/deploy your own virtual machine. At AWS you have a w
+ide variety of compute instances you can choose from. This ranges from the type of operating 
+system you would choose to the RAM or CPU you would want your compute instance to have.
+
+Elastic Container Services(ECS): It is used to run and manage your Docker containers. 
+You can think of it as a managed Kubernetes service.
+
+LightSail (VPS Service – Virtual Private service): AWS Lightsail launches virtual private servers, 
+which are VMs with individual operating systems but restricted access to physical server resources.
+
+Lambda: Lambda lets you upload a function onto AWS and you pay every time the function is 
+executed or called. You do not need to think about managing the OS or the VM. Lambda does it all for you.
+
+Batch: Batch computing is used for Batch processing. AWS Batch dynamically provisions the optimal 
+quantity and type of compute resources 
+
+Simple Storage Service (S3): Amazon Simple Storage Service (Amazon S3) is an object storage service offering
+ industry-leading scalability, data availability, security, and performance. 
+
+Glacier: It is a storage service used for Data archival. It is primarily used to store data that you do not 
+need to use right away. 
+
+Snow Ball: It is used to transport a large amount of data onto AWS or to take it out of AWS and move 
+it to your data center.
+AWS ships you a hardware device that you plug into your data center and then upload your encrypted data 
+onto the snowball (Hardware device). You will then ship it to AWS and they will upload your data onto AWS. 
+This way you do not need to move your data through the internet as it might take months to move petabytes
+of data onto AWS.
+
+Storage Gateway: It is a VM you install in your data center and this replicates data back into S3. This is used
+ when you have an on-premises data-center and would like to replicate the data onto AWS. 
+
+
+Amazon Route 53 is a scalable and highly available Domain Name System (DNS) web service designed to 
+give developers and businesses an extremely reliable way to route end users to Internet applications. 
+It connects user requests to infrastructure running in AWS—such as Amazon EC2 instances, Elastic Load 
+Balancers, or S3 buckets—and can also be used to route users to infrastructure outside of AWS.
