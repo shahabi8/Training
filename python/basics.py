@@ -449,6 +449,11 @@ print(s.ljust(10, '-'))  # Output: "hello-----"
 s = "hello"
 print(s.rjust(10, '-'))  # Output: "-----hello"
 
+# reverse string
+# Using slicing
+def reverse_string(s):
+    return s[::-1]
+
 # min heap by default
 x = [5, 7, 9, 1, 3]
 heapq.heapify(x)

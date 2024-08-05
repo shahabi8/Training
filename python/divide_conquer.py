@@ -68,6 +68,7 @@ def findKthLargest(self, nums: List[int], k: int) -> int:
 # quick select best time complexity:
 # o(n) + o(n/2) + o(n/4) + ... + o(1) --> geometric series
 # a + ar + ar^2 + ...
+# O(N) in the average case
 # sum = a / (1 - r) --> a = 1, r = (1/2) --> sum = 2 --> sum o(n) + o(n/2) + o(n/4) + ... + o(1) == 2 * n
 # quick sort worst time complexity
 # o(n) + o(n - 1) + o(n - 2) + ... + o(1) --> n * (n + 1) // 2 == o(n^2)

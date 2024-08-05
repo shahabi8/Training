@@ -42,3 +42,26 @@ class Solution:
             sm += Solution.find_divisor(i)
         return sm
     
+
+# rotate 2D matrix by 90 degree
+# first transpose matrix and then reverse left to right
+matrix = [[1,2,3],[4,5,6],[7,8,9]]
+def rotate(self, matrix: List[List[int]]) -> None:
+    """
+    Do not return anything, modify matrix in-place instead.
+    """
+    rows = len(matrix)
+    if rows == 0: return matrix
+    cols = len(matrix[0])
+    # transpose
+    for i in range(rows):
+        for j in range(i + 1, cols):
+            matrix[i][j], matrix[j][i] = matrix[j][i], matrix[i][j]
+    # reverse left to right
+    for i in range(rows):
+        for j in range(cols // 2):
+            end = cols - 1 - j
+            matrix[i][j], matrix[i][end] = matrix[i][end], matrix[i][j]
+
+    return matrix
+    

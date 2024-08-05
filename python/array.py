@@ -154,7 +154,7 @@ def move_zeros_to_end(nums):
     return nums
 
 
-#sliding window
+# sliding window
 # idea in this sliding window is that when r hit zero we and beyond the 
 # number of allowable zeros in subarray we move left, this mean once, the 
 # subarray is in invalid state we keep moving left along with right until it hit zero 
@@ -194,20 +194,20 @@ class Solution:
 
 # for each element: min(max_height_left, max_height_right) - height[i]
 # so brute force is like this
-    def trap(self, height):
-        ans = 0
-        size = len(height)
-        for i in range(1, size - 1):
-            left_max = 0
-            right_max = 0
-            # Search the left part for max bar size
-            for j in range(i, -1, -1):
-                left_max = max(left_max, height[j])
-            # Search the right part for max bar size
-            for j in range(i, size):
-                right_max = max(right_max, height[j])
-            ans += min(left_max, right_max) - height[i]
-        return ans
+def trap(self, height):
+    ans = 0
+    size = len(height)
+    for i in range(1, size - 1):
+        left_max = 0
+        right_max = 0
+        # Search the left part for max bar size
+        for j in range(i, -1, -1):
+            left_max = max(left_max, height[j])
+        # Search the right part for max bar size
+        for j in range(i, size):
+            right_max = max(right_max, height[j])
+        ans += min(left_max, right_max) - height[i]
+    return ans
 # to improve this solution we can basically store left_max and right_max
 
 
@@ -239,3 +239,85 @@ def maxProfit(self, prices: List[int], profits: List[int]) -> int:
             if prices[i] > prices[j] and max_profit[j] != -1:
                 mx = max(mx, max_profit[j] + profits[i])
     return mx
+
+
+# heap problem and use heap to keep track of buildings height
+
+buildings = [[2,9,10],[3,7,15],[5,12,12],[15,20,10],[19,24,8]]
+def getSkyline(self, buildings: List[List[int]]) -> List[List[int]]:
+    # creating adding new building events
+    event = [(l, h, r) for (l, r, h) in buildings]
+    # creating closing existing buildings events
+    event += [(r, 0, 0) for (l, r, h) in buildings]
+    # sort events
+    event.sort(key = lambda x: (x[0], -x[1]))
+    # base case when there is no existing building left
+    heap = [[0, float('inf')]]
+    heapq.heapify(heap)
+    output = []
+    for (l, h, r) in event:
+        # need to clear heap as we hit closing events
+        # = l because l can be r so closing event
+        # < l when new building does not have overlap with exisiting ones
+        while heap and heap[0][1] <= l:
+            heapq.heappop(heap)
+        if h:
+            heapq.heappush(heap, [-h, r])
+        if not output:
+            output.append([l, h])
+        elif output and output[-1][1] != -heap[0][0]: # if building in heap has different height
+            output.append([l, -heap[0][0]])
+    return output
+
+# Monotonic Deque
+# this stack is used to keep track of max elements in a window
+# if a new element is bigger than current elements, so that's the 
+# max we have in our window until it popleft from the window
+# if element is smaller than top of queue so we add it to queue as
+# they will be shadowed by elements in stack that are before them
+# until they are out of stack.
+def maxSlidingWindow(self, nums: List[int], k: int) -> List[int]:
+    dq = deque()
+    output = []
+    for i, item in enumerate(nums):
+        while dq and dq[-1] < item:
+            dq.pop()
+        dq.append(item)
+        if i - k >= 0 and nums[i - k] == dq[0]:
+            dq.popleft()
+        if i >= k - 1:
+            output.append(dq[0])
+    return output
+
+# Gas Station
+# gas = [1,2,3,4,5]
+# cost = [3,4,5,1,2]
+def canCompleteCircuit(self, gas: List[int], cost: List[int]) -> int:
+    output = []
+    l, cnt, cur_cnt = 0, 0, 0
+    # to pass through the whole array we need total sum be bigger than zero
+    # if we hit a place where local sum is negative, we need to start from another index
+    for i in range(len(gas)):
+        cur_cnt += gas[i] - cost[i]
+        cnt += gas[i] - cost[i]
+        if cur_cnt < 0:
+            cur_cnt = 0
+            l = i + 1
+
+    return l if cnt >= 0 else -1
+
+# sum array sum equal k
+# add prefix sums to dictionary so with new sum 
+# we can check if sm - k is also in data if so 
+# then this is another subarray of interest
+def subarraySum(self, nums: List[int], k: int) -> int:
+    data = defaultdict(int)
+    # if sm - k == 0
+    data[0] = 1
+    cnt, sm = 0, 0
+    for i, item in enumerate(nums):
+        sm += item
+        if sm - k in data:
+            cnt += data[sm - k]
+        data[sm] += 1
+    return cnt

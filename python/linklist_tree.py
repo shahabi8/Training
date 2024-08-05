@@ -39,6 +39,10 @@ def isPalindrome(head):
 
     return True
 
+# in binary tree if we know the number of childs in the bottom layer (L)
+# total number of nodes will be 2 * L - 1
+# in full binary tree the max number of node in each layer is 2 ** n  where n starts from 0
+
 class TreeNode:
     def __init__(self, value=0, left=None, right=None):
         self.value = value
@@ -270,3 +274,92 @@ class LRUCache:
         self.dic[key] = value
         if len(self.dic) > self.capacity:
             self.dic.popitem(False)
+# another link list example where we initialize new_head with node and
+# and return new_head.next. This way lots of corner cases are covered.
+# Merge Two Sorted Lists
+
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) -> Optional[ListNode]:
+    head1 = list1
+    head2 = list2
+    new_head = ListNode(-1)
+    cur = new_head
+    while head1 and head2:
+        if head1.val < head2.val:
+            cur.next = head1
+            head1 = head1.next
+        else:
+            cur.next = head2
+            head2 = head2.next
+        cur = cur.next
+    if head1:
+        cur.next = head1
+    if head2:
+        cur.next = head2
+    return new_head.next
+
+# log n update of prefix sum
+# log n to calculate prefix sum
+# array approach o(n) to update prefix sum
+# and o(1) to calculate get prefix sum
+class FenwickTree:
+    def __init__(self, size):
+        self.size = size
+        self.tree = [0] * (size + 1)
+
+    def update(self, index, delta):
+        while index <= self.size:
+            self.tree[index] += delta
+            index += index & -index
+
+    def query(self, index):
+        sum = 0
+        while index > 0:
+            sum += self.tree[index]
+            index -= index & -index
+        return sum
+
+    def range_query(self, left, right):
+        return self.query(right) - self.query(left - 1)
+
+
+class SegmentTree:
+    def __init__(self, arr):
+        self.n = len(arr)
+        self.tree = [0] * (2 * self.n)
+        self.build(arr)
+
+    def build(self, arr):
+        # Insert leaf nodes in tree
+        for i in range(self.n):
+            self.tree[self.n + i] = arr[i]
+        # Build the tree by calculating parents
+        for i in range(self.n - 1, 0, -1):
+            self.tree[i] = self.tree[2 * i] + self.tree[2 * i + 1]
+
+    def update(self, pos, value):
+        # Update the value at position pos
+        pos += self.n
+        self.tree[pos] = value
+        while pos > 1:
+            pos //= 2
+            self.tree[pos] = self.tree[2 * pos] + self.tree[2 * pos + 1]
+
+    def query(self, l, r):
+        # Sum on interval [l, r)
+        l += self.n
+        r += self.n
+        sum = 0
+        while l < r:
+            if l % 2:
+                sum += self.tree[l]
+                l += 1
+            if r % 2:
+                r -= 1
+                sum += self.tree[r]
+            l //= 2
+            r //= 2
+        return sum
