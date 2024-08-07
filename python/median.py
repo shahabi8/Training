@@ -29,3 +29,39 @@ def getMinTotalDistance(dist_centers):
         total_distance += min(abs(center - warehouse1_position), abs(center - warehouse2_position))
     
     return total_distance
+
+# using sorted list to find median of sorted array
+# sorted array is like multiset balanced binary search tree
+# indexing and finding element in the middle of sortedlist is o(logn) operation
+from sortedcontainers import SortedList
+class MedianFinder:
+    def __init__(self):
+        self.data = SortedList([])
+    def addNum(self, num: int) -> None:
+        self.data.add(num)
+
+    def findMedian(self) -> float:
+        n = len(self.data)
+        if n % 2:
+            return float(self.data[n // 2])
+        return (float(self.data[n // 2]) + float(self.data[(n - 1) // 2])) / 2
+# two heap approach, add element to max heap, the pop the max from max heap add it to mean heap
+# then if length max heap is smaller than min heap pop one element from min heap and add it to max heap
+#
+class MedianFinder:
+    def __init__(self):
+        self.min_heap = []
+        self.max_heap = []
+        heapq.heapify(self.min_heap)
+        heapq.heapify(self.max_heap)
+    def addNum(self, num: int) -> None:
+        heapq.heappush(self.max_heap, -num)
+        heapq.heappush(self.min_heap, -heapq.heappop(self.max_heap))
+        if len(self.max_heap) < len(self.min_heap):
+            heapq.heappush(self.max_heap, -heapq.heappop(self.min_heap))
+
+    def findMedian(self) -> float:
+        n = len(self.min_heap) + len(self.max_heap)
+        if len(self.min_heap) != len(self.max_heap):
+            return float(-self.max_heap[0])
+        return (float(self.min_heap[0]) + float(-self.max_heap[0])) / 2

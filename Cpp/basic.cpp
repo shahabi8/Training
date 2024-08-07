@@ -173,10 +173,6 @@ public:
     }
 };
 
-
-
-
-
 auto tp = std::string{};
 auto path = std::string{"/path/to/file"}
 std::stringstream ss{path};
@@ -322,3 +318,37 @@ int max = 20;
 int random_number = min + rand() % (max - min + 1);
 // Generate a random floating-point number between 0.0 and 1.0
 auto randnum = static_cast<float>(std::rand()) / RAND_MAX;
+
+// C++ static method can return instance of class
+class Pizza {
+public:
+    // Constructor is private to force the use of factory methods
+    Pizza(const std::vector<std::string>& ingredients) : ingredients_(ingredients) {}
+
+    // Static factory method for Margherita pizza
+    static std::shared_ptr<Pizza> margherita() {
+        return std::make_shared<Pizza>(std::vector<std::string>{"mozzarella", "tomatoes"});
+    }
+
+    // Static factory method for Pepperoni pizza
+    static std::shared_ptr<Pizza> pepperoni() {
+        return std::make_shared<Pizza>(std::vector<std::string>{"mozzarella", "tomatoes", "pepperoni"});
+    }
+
+    // Static factory method for custom pizza
+    static std::shared_ptr<Pizza> custom(const std::vector<std::string>& ingredients) {
+        return std::make_shared<Pizza>(ingredients);
+    }
+
+    // Function to print ingredients
+    void print() const {
+        std::cout << "Pizza with ";
+        for (const auto& ingredient : ingredients_) {
+            std::cout << ingredient << " ";
+        }
+        std::cout << std::endl;
+    }
+
+private:
+    std::vector<std::string> ingredients_;
+};

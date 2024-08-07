@@ -181,3 +181,25 @@ def validPartition(self, nums: List[int]) -> bool:
             dp[dp_id] = True
     return dp[-1]
 
+# coin change problem
+# have a list of coins want to know min of coins needed to get to an amount
+# Input: coins = [1,2,5], amount = 11
+# Output: 3
+# now idea is in dp we can start from 0 to amount + 1 and see how we can build amounts
+# store data in dp. 
+def coinChange(self, coins: List[int], amount: int) -> int:
+    n = len(coins)
+    dp = defaultdict(int)
+    dp[0] = 0
+    for i in coins:
+        dp[i] = 1
+    for i in range(amount + 1):
+        for j in coins:
+            if i - j in dp:
+                if i not in dp:
+                    dp[i] = dp[i - j] + 1
+                else:
+                    dp[i] = min(dp[i], dp[i - j] + 1)
+    
+    return dp[i] if i in dp else -1
+

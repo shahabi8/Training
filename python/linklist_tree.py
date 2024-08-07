@@ -301,6 +301,22 @@ def mergeTwoLists(self, list1: Optional[ListNode], list2: Optional[ListNode]) ->
         cur.next = head2
     return new_head.next
 
+# another example that a dummy node can help simplify linklist manipulation
+# removing nth node from the linklist
+# corner case is where we want to remove the head itself
+def removeNthFromEnd(self, head: Optional[ListNode], n: int) -> Optional[ListNode]:
+    dummy = ListNode(-1)
+    dummy.next = head
+    cur = dummy
+    end = dummy
+    for i in range(n + 1):
+        end = end.next
+    while end:
+        cur = cur.next
+        end = end.next
+    cur.next = cur.next.next
+    return dummy.next
+
 # log n update of prefix sum
 # log n to calculate prefix sum
 # array approach o(n) to update prefix sum

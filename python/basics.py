@@ -586,3 +586,33 @@ def match_orders(order, backlog, functor, order_backlog):
 random_number = random.randint(1, 100)
 # floating point between 0 and 100 but not inclusive
 random_number = 100 * random.random()
+
+
+# @classmethod can change class state and acess class_variable which is static
+# @staticmethod is for stateless functions, utility functions and should not change class state
+class Example:
+    class_variable = 42  # Static (class) variable
+
+    @classmethod
+    def class_method(cls):
+        print(f"Class method accessed class variable: {cls.class_variable}")
+        cls.class_variable += 1  # Modify the class variable
+
+    @staticmethod
+    def static_method():
+        print(f"Static method accessed class variable: {Example.class_variable}")
+        # Example.class_variable += 1  # Modify the class variable (not recommended for consistency)
+
+# class methods can also return instances of a class calling constructor 
+class Pizza:
+    def __init__(self, ingredients):
+        self.ingredients = ingredients
+
+    @classmethod
+    def margherita(cls):
+        return cls(['mozzarella', 'tomatoes'])
+
+    @classmethod
+    def pepperoni(cls):
+        return cls(['mozzarella', 'tomatoes', 'pepperoni'])
+
