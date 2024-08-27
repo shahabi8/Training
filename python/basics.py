@@ -6,6 +6,10 @@ import sys
 import random
 add = lambda x, y: x + y
 
+# sum in python
+data = [1,1,1,1,0,0,0,0,0,1,0,1,0,1,0]
+ones = sum(data)
+
 # sort
 points = [(2, 3), (4, 1), (5, 7), (1, 2)]
 points_sorted = sorted(points, key=lambda point: point[1])
@@ -239,7 +243,22 @@ for name, subject in names:
 # dic of dic of string
 defaultdict(lambda: defaultdict(str))
 
+group_dict.pop('a', None)  # Removes 'a' if it exists
+group_dict.pop('c', None)  # Does nothing since 'c' does not exist
+
+# default dict with default values in list
+data = defaultdict(lambda: [0, 0])
+# default dict with orderedDict as default
+order = defaultdict(OrderedDict)
+
+data = defaultdict(SortedList)
+#pop first element
+data[key].pop(0)
+
 ordered_dict = OrderedDict()
+# if you want to have ordereddict of ordereddic
+if "a" not in ordered_dict:
+    ordered_dict["a"] = OrderedDict()
 
 # Adding elements
 ordered_dict['apple'] = 3
@@ -454,6 +473,10 @@ print(s.rjust(10, '-'))  # Output: "-----hello"
 def reverse_string(s):
     return s[::-1]
 
+# python doesn't throw error in array slicing if the index is bigger than array length
+for i in range(len(word)):
+    pattern = word[:i] + '*' + word[i + 1:]
+
 # min heap by default
 x = [5, 7, 9, 1, 3]
 heapq.heapify(x)
@@ -560,10 +583,43 @@ d2 = d.copy()
 
 from sortedcontainers import SortedDict, SortedList
 sd = SortedDict()
-sl = SortedList()
+print(sd.pop('banana'))  # Output: 5
+print(sd)  # Output: SortedDict({'apple': 1, 'cherry': 2, 'date': 4})
+
+# Using popitem
+print(sd.popitem())  # Output: ('date', 4)
+print(sd.popitem(0))  # Output: ('apple', 1)
 sd['apple'] = 5
 sd['cherry'] = 2
 sd.pop('cherry')
+# Accessing keys
+print(list(sd.keys()))  # Output: ['apple', 'banana', 'cherry']
+
+# Accessing values
+print(list(sd.values()))  # Output: [1, 3, 2]
+
+# Accessing items
+print(list(sd.items())) 
+print(sd.bisect_left('date'))  # Output: 3
+print(sd.bisect_right('date'))  # Output: 4
+
+# Getting the index of a key
+print(sd.index('cherry'))  # Output: 2
+
+# Accessing keys by index
+print(sd.iloc[1])  # Output: 'banana'
+
+# Peeking at items without removing
+print(sd.peekitem(0))  # Output: ('apple', 5)
+# Using the iterator from keys()
+key_iter = iter(sd.keys())
+print(next(key_iter))  # Output: 'apple'
+
+# Using reversed()
+rev_iter = reversed(sd)
+print(next(rev_iter))  # Output: 'fig'
+sl = SortedList()
+
 sl.add(10)
 sl.add(5)
 sl.remove(10)
@@ -615,4 +671,23 @@ class Pizza:
     @classmethod
     def pepperoni(cls):
         return cls(['mozzarella', 'tomatoes', 'pepperoni'])
+    
+# to find index of character
+frequency = [0] * 26
+word = 'hello'
+# Count occurrences of each letter
+for c in word:
+    frequency[ord(c) - ord("a")] += 1
+
+# reverse array in python
+arr = [1,2,3,4,5,6,7]
+arr.reverse()
+# reverse portion of array in python
+def reverse(i, j):
+    while i < j:
+        arr[i], arr[j] = arr[j], arr[i]
+        i += 1
+        j -= 1
+# this reverse is not in place
+arr[2:5+1] = arr[2:5+1][::-1]  # Reverse portion from index 2 to 5
 

@@ -1,3 +1,4 @@
+from collections import defaultdict, OrderedDict
 class Node:
     def __init__(self, data):
         self.data = data
@@ -149,3 +150,74 @@ print(bytes(my_str))      # Output: b'123.45'
 
 # Custom list conversion
 print(my_str.to_list())   # Output: ['1', '2', '3', '.', '4', '5']
+
+# design
+# define data type table so that it can carry all related data about the table
+class table:
+    def __init__(self, columns, name):
+        self.name = name
+        self.columns = columns
+        self.rows = defaultdict(list)
+        self.rowId = 1
+
+class SQL:
+
+    def __init__(self, names: List[str], columns: List[int]):
+        self.tables = {}
+        for i in range(len(names)):
+            self.tables[names[i]] = table(columns[i], names[i])
+
+    def insertRow(self, name: str, row: List[str]) -> None:
+        if name not in self.tables or len(row) > self.tables[name].columns:
+            return
+        rowId = self.tables[name].rowId
+        self.tables[name].rows[rowId].extend(row)
+        self.tables[name].rowId += 1
+
+    def deleteRow(self, name: str, rowId: int) -> None:
+        if name not in self.tables:
+            return
+        if rowId not in self.tables[name].rows:
+            return
+        del self.tables[name].rows[rowId]
+        return
+
+    def selectCell(self, name: str, rowId: int, columnId: int) -> str:
+        if name not in self.tables or rowId not in self.tables[name].rows \
+           or columnId > self.tables[name].columns:
+            return
+        return self.tables[name].rows[rowId][columnId - 1]
+    
+# another design would be to use a very complex data structure to handle this problem
+# in this case the data structure is two nested dictionary and one list inside the dictionary
+# also it has difficulty deleting elements because of list, Instead of list it needs another
+# dictionary and also a add some other data to carry what was the last row id
+class SQL:
+
+    def __init__(self, names: List[str], columns: List[int]):
+        self.tables = defaultdict(OrderedDict)
+        n = len(names)
+        for i in range(n):
+            for cnt in range(1, columns[i] + 1):
+                self.tables[names[i]][cnt] = []
+
+    def insertRow(self, name: str, row: List[str]) -> None:
+        if name not in self.tables or len(row) > len(self.tables[name]):
+            return
+        i = 0
+        for cols in self.tables[name]:
+            self.tables[name][cols].append(row[i])
+            i += 1
+        return
+
+    def deleteRow(self, name: str, rowId: int) -> None:
+        if name not in self.tables:
+            return
+        for cols in self.tables[name]:
+            self.tables[name][cols][rowId - 1] = -1
+        return
+
+    def selectCell(self, name: str, rowId: int, columnId: int) -> str:
+        if name not in self.tables or columnId not in self.tables[name]:
+            return
+        return self.tables[name][columnId][rowId - 1]

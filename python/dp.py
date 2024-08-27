@@ -203,3 +203,38 @@ def coinChange(self, coins: List[int], amount: int) -> int:
     
     return dp[i] if i in dp else -1
 
+# dp count subsets problem
+#Sort array to group numbers easily. Then based on the size of the group count 
+# 
+# how many valid subsets we have. If we include i then dp[i - 2] subsets are 
+# valid with i. If we exclude i dp[i - 1] subsets are valid. So adding the two i
+# s the number of valid subsets for dp[i]. In all these counts we include empty 
+# subsets in the count as it adds the options of subsets without including this subset counts.
+def countTheNumOfKFreeSubsets(self, nums: List[int], k: int) -> int:
+    n = len(nums)
+    mx = max(nums)
+    data = defaultdict(int)
+    nums.sort()
+    for i in nums:
+        data[i] = 1
+    for i in range(n):
+        mult = 1
+        while nums[i] + mult * k in data and nums[i] + mult * k <= mx:
+            data[nums[i]] += 1
+            del data[nums[i] + mult * k]
+            mult += 1
+
+    product = 1
+    for key in data:
+        sz = data[key]
+        dp = [0] * (sz + 1)
+        # empty subset if we don't want to include 
+        # these set numbers in making subsets
+        dp[0] = 1
+        dp[1] = 2
+        for i in range(2, sz + 1):
+            # dp[i - 2] if we include i and dp[i - 1] if we exclude i
+            dp[i] = dp[i - 2] + dp[i - 1]
+        product *= (dp[sz])
+    return product
+

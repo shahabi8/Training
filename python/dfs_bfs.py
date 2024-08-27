@@ -48,6 +48,40 @@ def bfs(graph, node, visited):
     
     return local_visited  # Return all nodes visited in this DFS run
 
+# in dfs problems if you need to check health of each path you need to 
+# have only local visited to not visit already visited nodes.
+# but you don't need to have global visited as it trims some of paths
+# and you cannot check their healths from other side of graph
+# You are given a 2D array of strings equations and an array of real numbers values,
+#  where equations[i] = [Ai, Bi] and values[i] means that Ai / Bi = values[i].
+# Determine if there exists a contradiction in the equations. Return true if there is a contradiction, or false otherwise.
+equations = [["le","et"],["le","code"],["code","et"]]
+values = [2,5,0.5]
+# for example if you start from code you get to et with cost of 0.5 and if you put this in global_visited
+# then when you start from le --5--> code --0.5--> et and le --2--> et, so we that from le we get to et though 2 paths
+# one result in 2.5 and the other is 2. SO this is contradictions. If I added global visited I'll miss on the second path
+def checkContradictions(self, equations: List[List[str]], values: List[float]) -> bool:
+    adj = defaultdict(list)
+    for i, item in enumerate(equations):
+        adj[item[0]].append((item[1], float(values[i])))
+
+    def dfs(i, res, local_vis):
+        if i in local_vis and abs(local_vis[i] - res) > 10 ** (-5):
+            return True
+        if i not in local_vis:
+            local_vis[i] = res
+            if i in adj:
+                for node, value in adj[i]:
+                    if dfs(node, res * value, local_vis):
+                        return True
+        return False
+
+    for i in adj:
+        local_vis = defaultdict(int)
+        if dfs(i, 1.0, local_vis):
+            return True
+    return False
+
 def dfs(graph, node, visited, local_visited):
     visited.add(node)
     local_visited.add(node)
@@ -356,3 +390,94 @@ class Solution:
             if res:
                 return res
         return 0
+
+# find all shortest paths between beginWord and endWord
+# Two steps extra compare to above problem
+# I. need to do DFS to construct all shortest paths, so we have parent dictionary to give us parent of the 
+# current node. So we start DFS from endWord and find our way back to beginWord.
+# II. Since there are several shortest paths might exist we need to revisit nodes that we already visited 
+# and we're visiting them again with the same distance. So we need to add those nodes to our parent 
+# dictionary to be able to build that path as well.
+def findLadders(self, beginWord: str, endWord: str, wordList: List[str]) -> List[List[str]]:
+    adj = defaultdict(list)
+    dq = deque([(beginWord, 1)])
+    visited = {beginWord: 1}
+    output, tp, dist = [], [], float('inf')
+    parents = defaultdict(list)
+    for word in wordList:
+        for i in range(len(word)):
+            adj[word[:i] + '*' + word[i + 1:]].append(word)
+    
+    while dq:
+        word, level = dq.popleft()
+        if level >= dist:
+            break
+        for i in range(len(word)):
+            for words in adj[word[:i] + '*' + word[i + 1:]]:
+                if words == endWord:
+                    dist = min(dist, level + 1)
+                if words not in visited:
+                    visited[words] = level + 1
+                    dq.append((words, level + 1))
+                    parents[words].append(word)
+                elif visited[words] == level + 1:
+                    parents[words].append(word)
+    
+    def dfs(word):
+        tp.append(word)
+        if word == beginWord:
+            tp_c = tp.copy()
+            output.append(tp_c[::-1])
+        else:
+            for words in parents[word]:
+                dfs(words)
+        tp.pop()
+        return
+    dfs(endWord)
+    return output
+    
+# Eulerian path visit each edge one but can visit verticies several times
+# Conditions for Eulerian Path:
+
+# The graph must be connected. 
+# 2 odd-degree vertices: If there are exactly two vertices with an 
+# odd degree, then an Eulerian path exists
+# 0 odd-degree vertices: If there are no vertices with an odd number of 
+# edges (all vertices have an even degree), then it’s possible to form an 
+# Eulerian cycle, meaning start from one node and end to the same node. 
+
+# 332. Reconstruct Itinerary
+
+# You are given a list of airline tickets where tickets[i] = [fromi, toi] represent 
+# the departure and the arrival airports of one flight. Reconstruct the itinerary in order and return it.
+# All of the tickets belong to a man who departs from "JFK", thus, the itinerary must begin with "JFK". 
+# If there are multiple valid itineraries, you should return the itinerary that has the smallest lexical
+# order when read as a single string.
+# You may assume all tickets form at least one valid itinerary. You must use all the tickets 
+# once and only once.
+
+# since we know that eulerian path exisit we don't need to check conditions of 0 or 2 vertices with odd
+# degree
+
+def findItinerary(self, tickets: List[List[str]]) -> List[str]:
+    adj = defaultdict(list)
+    output = []
+    for frm, to in tickets:
+        adj[frm].append(to)
+    # we need to visit airport in lexical order so we sort them
+    # and going to pop from end of list
+    for loc in adj:
+        adj[loc].sort(reverse = True)
+    def dfs(node):
+        while adj[node]:
+            dest = adj[node].pop()
+            dfs(dest)
+        # if we have 0 or 2 verticies with odd degree, if we have 2 odd degree our start 
+        # point must be one of them then we either end up in another odd vertice or back 
+        # to jfk if no odd vertices. so the vertices who have no exit edge will be the end of our trip
+        # and we store all vertices based on no remaining exit edge
+        output.append(node)
+        return
+            
+    dfs("JFK")
+    return output[::-1]

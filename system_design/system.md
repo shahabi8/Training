@@ -1,4 +1,143 @@
 
+An authoritative DNS server is responsible for providing answers to queries about domain names that are under its control. It holds the definitive, up-to-date records (such as A records, CNAME records, etc.) for the domains it is responsible for. When a DNS resolver needs to find the IP address associated with a domain name, it eventually queries the authoritative DNS server for that domain.
+Amazon Route 53 as an Authoritative DNS Server
+
+Authentication refers to the procedure through which our API verifies who the user is. Typically, applications fulfill this by implementing a login system utilizing usernames and passwords for verification. There are other techniques for authenticating users in the API paradigm that we’ll explore in this lesson.
+
+Authorization is controlling what the user has access to. This is when applications verify whether the user is even allowed to call the request they are making. For example, we may be authorized to view a Google Doc but not edit it.
+
+IDL stands for Interface Definition Language. It is a language used to define the interfaces that software components use to communicate with each other, especially in a distributed system or between different programming languages.
+
+Protocol Buffers is a language-neutral, platform-neutral extensible mechanism for serializing structured data, and it is the default IDL used by gRPC.
+
+Data marshaling refers to the process of transforming or converting data from one format or representation to another so that it can be transmitted across different environments, such as between different components of a software system, over a network, or between different programming languages.
+
+In systems like gRPC or other Remote Procedure Call frameworks, data marshaling is crucial for enabling communication between clients and servers. The client marshals (serializes) the request data before sending it over the network, and the server unmarshals (deserializes) the data upon receiving it to process the request.
+
+REST API best practices
+
+Exchange of data via JSON: The REST APIs should use JSON format for sending and receiving data.
+Nesting on endpoints: Different endpoints containing the associated information should be interlinked to make them easier to understand
+A nesting like https://www.example.com/posts/user seems logical. Similarly, if we need to get comments for a post, we should add /postId/comments at the end of the /posts path. The resultant endpoint will become https://www.example.com/posts/postId/comments. 
+
+Use nouns instead of verbs in the paths: We should strictly avoid using verbs instead of nouns in the endpoints.
+https://www.example.com/posts/getUser not good
+https://www.example.com/posts/user.
+Filtering and pagination: Sometimes, the database gets incredibly large.
+https://www.example.com/posts?author=fahim 
+
+Adopting standard security practices: Another best practice we should adopt is making our API invulnerable to malicious attacks. In addition, the communication between the client and server should also be private.
+API versioning: We should offer different versions of the API if we make any changes to it that might affect customers.
+
+GraphQL
+GraphQL is analogous to the SQL queries in relational databases, where we can build a query to fetch the required data from multiple tables.
+GraphQL works in a similar way for APIs to fetch data from multiple endpoints in a single request. 
+
+
+Process of receiving rest request and how to flow it down to database
+REST API Endpoint: The request hits a specific REST API endpoint (e.g., /api/users) exposed by your application.
+
+Request Handling: The server-side application processes the request, extracting any necessary data (like query parameters, request body, headers, etc.).
+
+Business Logic: The application may perform some business logic based on the request, such as validating input data, applying rules, or transforming data.
+SQL Query Construction: Based on the business logic, the application constructs an SQL query. This could be a simple query (like SELECT * FROM users WHERE id = ?) or a more complex query involving joins, aggregations, etc.
+
+Interacting with the Database via ODBC
+ODBC Driver: The application uses an ODBC (Open Database Connectivity) driver to interact with the database. The ODBC driver is a standardized interface that allows the application to send SQL queries to different database management systems (DBMS) in a database-agnostic way.
+
+Database API Call: The ODBC driver internally uses the database's native API to execute the SQL query on the database server.
+
+Database Processing
+
+Query Execution: The database server receives the SQL query and executes it against the database. This might involve reading data, writing data, or modifying existing data.
+Result Handling: The database server processes the query and returns the result (e.g., a result set for a SELECT query, an acknowledgment for an INSERT/UPDATE/DELETE).
+
+Returning the Response
+
+ODBC Response: The result from the database server is sent back through the ODBC driver to the application.
+Application Logic: The application processes the result, possibly transforming it into a more suitable format for the client (e.g., converting database rows into JSON).
+REST Response: The application sends the final response back to the client, usually in a format like JSON or XML.
+
+The REST API layer and the database interaction layer are separate. The REST API handles client interactions, while the database interaction layer (using ODBC) handles data storage and retrieval.
+
+when to call rest api vs using Kafka
+Synchronous: REST APIs are typically synchronous, meaning that when you make a request, the client waits for the server to process the request and return a response. The processing happens in real-time, and the client is blocked until it receives a response.
+Real-Time Response: This approach is suitable when you need an immediate response or confirmation from the server, such as when performing operations that require user feedback (e.g., submitting a form and showing a success or error message).
+Simpler Architecture: Directly calling a REST API is simpler in terms of architecture, as it involves fewer components and is easier to implement and maintain.
+
+HTTP headers: HTTP headers are used to exchange the metadata with the server. For example, some headers are used to exchange the client’s information, rate limiting details, request status, data formats, data, parameters required for processing a request, and so on.
+
+examples of rest
+GET /api/users?page=2&limit=10 HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+Accept: application/json
+
+POST /api/users HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Emily Davis",
+    "email": "emily.davis@example.com",
+    "password": "securepassword"
+}
+
+PUT /api/users/51 HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+Content-Type: application/json
+Accept: application/json
+
+{
+    "name": "Emily Davis",
+    "email": "emily.newemail@example.com"
+}
+
+PATCH /api/users/51 HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+Content-Type: application/json
+Accept: application/json
+
+{
+    "email": "emily.updatedemail@example.com"
+}
+
+DELETE /api/users/51 HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+Accept: application/json
+
+HEAD /api/users/51 HTTP/1.1
+Host: example.com
+Authorization: Bearer <your-token>
+
+Using Kafka: Asynchronous Processing
+Asynchronous: Kafka enables asynchronous processing. When you submit data to Kafka, the client immediately receives an acknowledgment that the data has been accepted into the queue, but the actual processing happens later, as consumers process messages from the queue.
+Decoupling: Kafka decouples the client from the server, allowing the server to process requests independently of the client's submission time. This approach is useful in distributed systems where components need to operate independently.
+Scalability: Kafka can handle a large volume of messages and scale horizontally by adding more brokers and partitions. It’s suitable for scenarios with high throughput and where many consumers may process data in parallel.
+Reliability: Kafka offers strong durability guarantees, ensuring that messages are not lost even if a consumer or server goes down. Messages can be replayed and processed multiple times if needed.
+
+Front end
+What is a PHP Request?
+
+A PHP request refers to an HTTP request handled by a PHP script. PHP (Hypertext Preprocessor) is a server-side scripting language commonly used for web development. When a client (such as a web browser) sends a request to a web server to access a webpage or service, the server may use PHP to process that request, generate the necessary content (e.g., HTML, JSON), and then send the response back to the client.
+PHP in a Typical Distributed System Architecture
+
+In a distributed system, PHP usually fits into the following architecture:
+
+    Client Layer: The end-user interacts with the system through a web or mobile application, which makes HTTP requests to the backend.
+
+    Web Server Layer: A web server (e.g., Apache, Nginx) receives these requests and routes them to the appropriate PHP scripts.
+
+    PHP Application Layer: PHP scripts process the requests, execute business logic, interact with databases or other services, and generate responses.
+
+    Backend Services: The PHP application might interact with databases, microservices, message queues, and other components of the distributed system to fulfill the request.
+
+    Response Layer: Once the PHP script has generated the necessary content, it is returned to the web server, which then sends it back to the client.
 
 How to store passwords safely in the database and how to validate a password?
 According to OWASP guidelines, “a salt is a unique, randomly generated string that is added to each password as part of the hashing process”.
@@ -447,6 +586,21 @@ Queries can be processed in parallel across multiple partitions, improving query
 For range queries (e.g., finding all emails starting with a particular letter), the partitioning scheme can be 
 designed to keep related terms together, optimizing range query performance.
 
+Hybrid approach
+
+1. Document Storage by ID (Document ID Hashing):
+
+    Primary Storage: In the hybrid approach, documents are primarily stored by hashing their unique document IDs. This hash determines which node in the distributed system stores the document.
+    Even Distribution: By hashing the document IDs, you ensure that documents are evenly distributed across the nodes, which helps balance the storage and query load.
+    Point Queries: When a query requests a specific document by its ID, the system can directly hash the ID to locate the node where the document is stored, making retrieval efficient.
+
+2. Term-Based Indexing (Term Hashing):
+
+    Inverted Index: Alongside storing documents by their ID, the system maintains an inverted index. An inverted index is a data structure that maps each term (or keyword) to a list of document IDs where that term appears.
+    Term Hashing: The terms themselves are hashed to determine which node in the distributed system will store the list of document IDs associated with each term. This allows the system to efficiently handle queries that search for documents containing specific terms.
+    Efficient Content Queries: When a query involves searching for documents containing a particular term, the system can directly access the nodes responsible for that term's index. The node then returns the list of document IDs that contain the term.
+
+
 Data cardinality refers to the uniqueness of data values contained in a column (attribute) of a database.
 High Cardinality:
 
@@ -477,14 +631,55 @@ web application and building NoSQL databases.
 
 Consistent hashing
 Consistent hashing is an effective way to manage the load over the set of nodes. 
-In consistent hashing, we consider that we have a conceptual ring of hashes from 00 to n−1,
-where nn is the number of available hash values. We use each node’s ID, calculate its hash, 
+In consistent hashing, we consider that we have a conceptual ring of hashes from 0 to n−1,
+where n is the number of available hash values. We use each node’s ID, calculate its hash, 
 and map it to the ring. We apply the same process to requests. Each request is completed by 
 the next node that it finds by moving in the clockwise direction in the ring.
 
 Use virtual nodes
 We’ll use virtual nodes to ensure a more evenly distributed load across the nodes. 
 Instead of applying a single hash function, we’ll apply multiple hash functions onto the same key.
+
+Co-Locating Related Data:
+composite hash key is a common and effective strategy for co-locating related data in distributed systems. By combining multiple attributes into a single composite key, you can influence how data is distributed across nodes, which helps in keeping related data together on the same or nearby nodes.
+Hierarchical Data: Identify the levels of hierarchy in your data. For example, in a geographically distributed system, you might have:
+
+    Level 1: region_id
+    Level 2: zone_id
+    Level 3: server_id
+
+Other Examples: In a retail application, you might have:
+
+    Level 1: category_id (e.g., Electronics, Clothing)
+    Level 2: subcategory_id (e.g., Mobile Phones, Laptops)
+    Level 3: product_id
+
+combined_hash = hash(region_id) + hash(zone_id) + hash(server_id) 
+Data Placement: The combined_hash value determines the node where the data will be stored. Because hash_region contributes significantly to the final hash, data within the same region is more likely to be co-located. Similarly, hash_zone further refines the placement within that region.
+
+another example is blob storage
+The partition key here is the combination of the account ID, container ID, and blob ID. This helps in co-locating the blobs for a single user on the same partition server, which enhances performance.
+
+# some SQL on how to design DB tables
+CREATE TABLE Blobs (
+    AccountID INT,
+    ContainerID VARCHAR(255),
+    BlobID VARCHAR(255),
+    BlobData BLOB,
+    PRIMARY KEY (AccountID, ContainerID, BlobID)  -- Primary key index
+);
+
+-- Create a secondary index with a different column order
+CREATE INDEX idx_container_account_blob 
+ON Blobs (ContainerID, AccountID, BlobID);
+
+SELECT BlobID, BlobData
+FROM Blobs
+WHERE AccountID = 123 AND ContainerID = 'container1';
+
+SELECT DISTINCT ContainerID
+FROM Blobs
+WHERE AccountID = 123;
 
 Data versioning
 To handle inconsistency, we need to maintain causality between the events
@@ -682,8 +877,8 @@ Any server can claim a range when it needs it for the first time or if it runs o
 Time sortable IDs
 Twitter Snowflake
 Time stamp: 41 bits are assigned for milliseconds. The above calculations give us 69 years before we need a new algorithm to generate IDs
-Worker number: The worker number is 10 bits. It gives us 210210 = 1,024 worker IDs.
-Sequence number: The sequence number is 12 bits. For every ID generated on the server, the sequence number is incremented by one. It gives us 212212 = 4,096 unique sequence numbers.
+Worker number: The worker number is 10 bits. It gives us 2^10 = 1,024 worker IDs.
+Sequence number: The sequence number is 12 bits. For every ID generated on the server, the sequence number is incremented by one. It gives us 2^12 = 4,096 unique sequence numbers.
 
 IDs generated in a dead period are a problem. The dead period is when no request for generating an ID is made to the server. These IDs will be wasted since they take up identifier space. 
 Another weak point of this system is its reliance on time. NTP can affect the working of this system. If the clock on one of the servers drifts two seconds in the future, other servers are two seconds behind. The NTP clock recognizes it and recalibrates its clock. Now, all serves will be aligned. However, in that drifting process, IDs could have been generated for a time that hasn’t occurred yet
@@ -701,7 +896,7 @@ Consider the design shown below. We’ll generate our ID by concatenating releva
 TrueTime API
 Google’s TrueTime API in Spanner is an interesting option. Instead of a particular time stamp, it reports an interval of time.
 
-Time stamp: The time stamp is 41 bits. We use TETE​ as a time stamp.
+Time stamp: The time stamp is 41 bits. We use T​ as a time stamp.
 
 Uncertainty: The uncertainty is four bits. Since the maximum uncertainty is claimed to be 6–10 ms, we’ll use four bits for storing it.
 
@@ -786,3 +981,64 @@ Some advanced message queue systems, such as Amazon SQS and RabbitMQ, offer more
         Exchanges and Queues: Supports different types of exchanges (direct, topic, fanout) to route messages to different queues.
         Queue Sharding: Can use plugins or extensions to achieve some level of partitioning or sharding.
         Clustering: Supports clustering for high availability and fault tolerance.
+
+# Using Cassendra to store user --> followers and user --> followings
+CREATE TABLE user_followings (
+  user_id UUID,
+  following_id UUID,
+  PRIMARY KEY (user_id, following_id)
+);
+
+Each row in this table represents a unique relationship where a specific user is followed by another user.
+The user_id column stores the ID of the user being followed.
+The follower_id column stores the ID of the user who is following.
+This means that if user A (with user_id = A) is followed by user B (with follower_id = B), there will be a row in the user_followers table with user_id = A and follower_id = B.
+
+SELECT follower_id FROM user_followers WHERE user_id = 'someUserId';
+
+CREATE TABLE user_followers (
+  user_id UUID,
+  follower_id UUID,
+  PRIMARY KEY (user_id, follower_id)
+);
+
+SELECT following_id FROM user_followings WHERE user_id = 'someUserId';
+
+But in reality we should use Graph DB for relationships
+
+# Using Cassendra for storing chat messages
+CREATE TABLE user_messages (
+    user_id UUID,
+    contact_id UUID,
+    timestamp TIMESTAMP,
+    message_id UUID,
+    message_text TEXT,
+    PRIMARY KEY ((user_id, contact_id), timestamp, message_id)
+) WITH CLUSTERING ORDER BY (timestamp DESC);
+
+user_id: The ID of the user. This acts as a partition key in combination with contact_id.
+contact_id: The ID of the contact (another user). This also acts as a partition key.
+timestamp: The time when the message was sent. This is used as a clustering key and is ordered in descending order to fetch the most recent messages first.
+message_id: A unique identifier for each message. It ensures the uniqueness of each message and can be part of the clustering key.
+message_text: The content of the message.
+
+Partitioning: By using (user_id, contact_id) as the partition key, you ensure that all messages between two specific users are stored in the same partition. This design makes it easy and efficient to query messages for a particular conversation.
+
+Clustering: Using timestamp as a clustering key and ordering by DESC ensures that the most recent messages are read first, which aligns with typical chat application behavior where users want to see the latest messages.
+
+Message Uniqueness: Including message_id in the clustering key helps to maintain the uniqueness of each message, even if multiple messages are sent at the exact same timestamp (which, while rare, is possible in high-frequency chat systems).
+
+Efficient Range Queries: This schema allows you to efficiently query message history between two users for specific time ranges, which is common in chat applications (e.g., loading the last 50 messages).
+
+SELECT message_id, message_text, timestamp FROM user_messages 
+WHERE user_id = 'user1' AND contact_id = 'user2'
+ORDER BY timestamp DESC
+LIMIT 50;
+
+Role of Clustering Key
+
+    Ordering: Clustering keys provide a way to order rows within a partition. For example, by specifying WITH CLUSTERING ORDER BY (timestamp DESC), you instruct Cassandra to store and retrieve messages in descending order of their timestamp. This means the most recent messages come first, which is a typical requirement for chat applications.
+
+    Efficient Range Queries: By using clustering keys, you can efficiently query subsets of data within a partition. For instance, you can retrieve all messages between certain dates or fetch the latest N messages. The clustering key enables these types of queries without scanning the entire partition.
+
+    Uniqueness: When used together with the partition key, clustering keys help ensure that each row in the table is unique. For example, (user_id, contact_id, timestamp, message_id) together forms a unique identifier for each message.

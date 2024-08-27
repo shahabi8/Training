@@ -65,3 +65,60 @@ def rotate(self, matrix: List[List[int]]) -> None:
 
     return matrix
     
+## sums
+## Arithmetic Sequence:
+
+# An arithmetic sequence is a sequence of numbers in which the difference between 
+# consecutive terms is constant. The sum SnSn​ of the first nn terms of an arithmetic 
+# sequence can be calculated using the formula:
+# Sn=n/2×(a1+an)
+
+# Geometric Sequence:
+
+# A geometric sequence is a sequence of numbers where each term after the first is 
+# found by multiplying the previous term by a constant called the common ratio r.
+#  The sum SnSn​ of the first nn terms of a geometric sequence can be calculated using 
+# the formula:
+# Sn=a1×(1−r^n)/(1−r),if r≠1
+
+# You are given a 0-indexed integer array books of length n where books[i] denotes 
+# the number of books on the ith shelf of a bookshelf.
+# You are going to take books from a contiguous section of the bookshelf spanning 
+# from l to r where 0 <= l <= r < n. For each index i in the range l <= i < r, 
+# you must take strictly fewer books from shelf i than shelf i + 1.
+# Return the maximum number of books you can take from the bookshelf.
+
+# this function calculates sum of a1, a1 + 1, ..., a1 + n = 
+# cnt = r - l + 1 is the series length 
+# but when we get the last number a1 + n, we need to find series length
+# series length is so it is either cnt or if this proposed length is bigger
+# then the series length is a1 + n itself, for example [8, 5, 4, 3, 5], so when we reach 3
+# max sum of it is 1 + 2 + 3 = 6, so it's series length is 3. to find the initial number
+# we need 3 - (1) * (2) --> 1 is the difference between consecutive elements, 
+# and 2 is number of elements before 3.
+
+# def calc(l, r):
+#     cnt = min(r - l + 1, books[r])
+#     return cnt * (2 * books[r] - cnt + 1) // 2
+
+# the code below means if the current item is not big enough to keep the positive slope of
+# one or bigger then we need to pop element in stack to see if this item can create a series
+# with other elements.
+# while st and item < books[st[-1]] - st[-1] + i:
+#     st.pop()
+def maximumBooks(self, books: List[int]) -> int:
+    n = len(books)
+    st = []
+    dp = [0] * n
+    def calc(l, r):
+        cnt = min(r - l + 1, books[r])
+        return cnt * (2 * books[r] - cnt + 1) // 2
+    for i, item in enumerate(books): 
+        while st and item < books[st[-1]] - st[-1] + i:
+            st.pop()
+        if not st:
+            dp[i] = calc(0, i)
+        else:
+            dp[i] = dp[st[-1]] + calc(st[-1] + 1, i)
+        st.append(i)
+    return max(dp)

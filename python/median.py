@@ -45,7 +45,7 @@ class MedianFinder:
         if n % 2:
             return float(self.data[n // 2])
         return (float(self.data[n // 2]) + float(self.data[(n - 1) // 2])) / 2
-# two heap approach, add element to max heap, the pop the max from max heap add it to mean heap
+# two heap approach, add element to max heap, the pop the max from max heap add it to min heap
 # then if length max heap is smaller than min heap pop one element from min heap and add it to max heap
 #
 class MedianFinder:

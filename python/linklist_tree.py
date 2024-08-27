@@ -274,6 +274,59 @@ class LRUCache:
         self.dic[key] = value
         if len(self.dic) > self.capacity:
             self.dic.popitem(False)
+
+# Least frequently used element. 
+# 1 dic to carry value and its count
+# 1 dic of dic to carry counts vs order of key-values we added to this count
+# when we get or put data we check if data is already there and if so we update its count and add it
+# to count + 1 else it count is 1. We keep mn as minimum frequency. so if new element is added mn is one
+# if the current element count is getting updated and the count is equal to mn and we are deleting that count
+# as there is no more data in it so mn is getting + 1
+class LFUCache:
+
+    def __init__(self, capacity: int):
+        # [0, 0] --> [value, count]
+        # data[key] = [value, count]
+        # order[count] = {{key1: value1}, ...}
+        self.data = defaultdict(lambda: [0, 0])
+        self.order = defaultdict(OrderedDict)
+        self.sz = capacity
+        self.mn = 0
+
+    def get(self, key: int) -> int:
+        if key not in self.data:
+            return -1
+        self.update(key)
+        return self.data[key][0]
+
+    def update(self, key):
+        value = self.data[key][0]
+        count = self.data[key][1]
+        self.data[key][1] += 1
+        if count in self.order and key in self.order[count]:
+            if len(self.order[count]) == 1:
+                if count == self.mn:
+                    self.mn += 1
+                del self.order[count]
+            else:
+                del self.order[count][key]
+        self.order[count + 1][key] = value
+
+    def put(self, key: int, value: int) -> None:
+        if len(self.data) == self.sz and key not in self.data:
+            to_del = next(iter(self.order[self.mn].keys()))
+            if len(self.order[self.mn]) == 1:
+                del self.order[self.mn]
+            else:
+                del self.order[self.mn][to_del]
+            del self.data[to_del]
+        if key not in self.data:
+            self.mn = 1
+            
+        self.data[key][0] = value
+        self.update(key)
+
+
 # another link list example where we initialize new_head with node and
 # and return new_head.next. This way lots of corner cases are covered.
 # Merge Two Sorted Lists
@@ -379,3 +432,28 @@ class SegmentTree:
             l //= 2
             r //= 2
         return sum
+    
+# deserialize string to tree
+# Input: s = "4(2(3)(1))(6(5))"
+# Output: [4,2,6,3,1,5]
+# the idea is for the first time we hit '(' this is left child
+# the second time if root.left exists this is right child
+class Solution:
+    @classmethod
+    def dig(cls, id, s):
+        r = 1 if s[id] == '-' else 0
+        while id + r < len(s) and s[id + r].isdigit():
+            r += 1
+        return int(s[id: id + r]), id + r
+    def str2tree(self, s: str) -> Optional[TreeNode]:
+        def dfs(s, id):
+            if id >= len(s):
+                return None, id
+            value, id = Solution.dig(id, s)
+            root = TreeNode(value)
+            if id < len(s) and s[id] == '(':
+                root.left, id = dfs(s, id + 1)
+            if id < len(s) and s[id] == '(' and root.left:
+                root.right, id = dfs(s, id + 1)
+            return root, id + 1
+        return dfs(s, 0)[0]

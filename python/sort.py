@@ -101,3 +101,25 @@ def heap_sort(arr):
 arr = [12, 11, 13, 5, 6, 7]
 sorted_arr = heap_sort(arr)
 print("Sorted array is:", sorted_arr)
+
+
+# cycle sort
+# cycle sort is an algorithm to sort number according to its index that mean number 2 should be at index 1
+# this is a sorted array [1, 2, 3, 4, ...]
+# this algorithm helps to find first missing number
+
+# numbers should between 1 and len(nums) number outside this range we have no place for them
+# while nums[i] != i + 1 and 0 < nums[i] <= n: in this line we're checking to make changes to put numbers
+# in their indices and if nums[cur] == nums[i]: we need to break the loop as there is no change in nums
+def firstMissingPositive(self, nums: List[int]) -> int: 
+    id, n = 0, len(nums)
+    for i in range(n):
+        while nums[i] != i + 1 and 0 < nums[i] <= n:
+            cur = nums[i] - 1
+            if nums[cur] == nums[i]:
+                break
+            nums[i], nums[cur] = nums[cur], nums[i]
+    for i in range(n):
+        if i + 1 != nums[i]:
+            return i + 1
+    return n + 1

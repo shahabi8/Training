@@ -170,6 +170,10 @@ class ComputerFacade:
         self.cpu.jump(0)
         self.cpu.execute()
 
+# Usage
+computer = ComputerFacade()
+computer.start()
+
 # Singleton Pattern
 class Singleton:
     _instance = None # class static attribute
@@ -352,42 +356,6 @@ context.execute_strategy("some data")  # Output: Strategy A executed with some d
 context.set_strategy(ConcreteStrategyB())
 context.execute_strategy("other data")  # Output: Strategy B executed with other data
 
-
-
-
-# Usage
-computer = ComputerFacade()
-computer.start()
-
-# strategy pattern
-class Strategy:
-    def execute(self, data):
-        pass
-
-class ConcreteStrategyA(Strategy):
-    def execute(self, data):
-        print("Strategy A executed with", data)
-
-class ConcreteStrategyB(Strategy):
-    def execute(self, data):
-        print("Strategy B executed with", data)
-
-class Context:
-    def __init__(self, strategy: Strategy):
-        self._strategy = strategy
-
-    def set_strategy(self, strategy: Strategy):
-        self._strategy = strategy
-
-    def execute_strategy(self, data):
-        self._strategy.execute(data)
-
-# Usage
-context = Context(ConcreteStrategyA())
-context.execute_strategy("some data")  # Output: Strategy A executed with some data
-
-context.set_strategy(ConcreteStrategyB())
-context.execute_strategy("other data")  # Output: Strategy B executed with other data
 
 #command pattern
 class Command:

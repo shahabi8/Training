@@ -7,6 +7,7 @@
 #include <iostream>
 #include <queue>
 #include <memory>
+#include <cctype>
 
 //  move semantics are primarily beneficial for types that manage resources 
 // (e.g., dynamically allocated memory), not for primitive types.
@@ -20,6 +21,26 @@ std::unique_ptr<int> ptr = std::make_unique<int>(10);
 std::unique_ptr<int[]> ptr = std::make_unique<int[]>(5);
 // Create a shared_ptr to manage a dynamic array of ints with a custom deleter
 std::shared_ptr<int[]> ptr(new int[5], std::default_delete<int[]>());
+
+int n = 5; // Size of the array
+int* arr = new int[n]; // Dynamically allocating memory for the array
+// Dynamically allocate memory for a 2D array
+int rows = 3;
+int cols = 4;
+int** arr = new int*[rows];
+for (int i = 0; i < rows; i++) {
+    arr[i] = new int[cols];
+}
+// static array
+std::array<int, 5> arr = {1, 2, 3, 4, 5};
+// 2D array using nested std::array
+std::array<std::array<int, cols>, rows> arr = {{
+    {1, 2, 3, 4},
+    {5, 6, 7, 8},
+    {9, 10, 11, 12}
+}};
+// 2D vector
+std::vector<std::vector<int>> arr(rows, std::vector<int>(cols));
 
 // Provides a non-owning reference to a resource managed by std::shared_ptr, 
 // useful for avoiding circular references and managing non-owning relationships.
@@ -35,6 +56,16 @@ void useWeakPtr(std::weak_ptr<int> weakPtr) {
 // you'll get multiple deletion error 
 auto sharedPtr = std::make_shared<int>(42);
 std::weak_ptr<int> weakPtr = sharedPtr;
+
+// avoid doing below 
+// Manually create a raw pointer
+int* rawPtr = new int(42);
+
+// Create the first shared_ptr from the raw pointer
+std::shared_ptr<int> sharedPtr1(rawPtr);
+
+// Create the second shared_ptr from the same raw pointer
+std::shared_ptr<int> sharedPtr2(rawPtr);
 
 useWeakPtr(weakPtr);  // Object exists, value is printed
 
@@ -109,6 +140,8 @@ node->next = node2;
 node2->prev = node;
 
 // shared_from_this and enable_shared_from_this
+// enable_shared_from_this let us to get shared_ptr
+// to itself from within class member function
 
 // Move Constructor and Move Assignment Operator
 class MyClass : public std::enable_shared_from_this<MyClass> {
@@ -173,6 +206,72 @@ public:
     }
 };
 
+// string in C++
+auto s = std::string{};
+// append another string
+s.append("!");
+// push back character
+s.push_back('!');
+// c_str(): Returns a pointer to a null-terminated C-string equivalent to the string.
+const char* cstr = s.c_str();
+// Returns a pointer to the character array used internally by the string.
+const char* data = s.data();
+//substr(size_t pos, size_t len): Returns a substring starting at pos of length len.
+std::string sub = s.substr(0, 5);
+// find(const std::string& str, size_t pos = 0): Finds the first occurrence of str starting from position pos.
+size_t pos = s.find("World");
+
+std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+
+if (isspace(c)) {
+    std::cout << "The character is a whitespace." << std::endl;
+}
+if (isdigit(c)) {
+    std::cout << "The character is a digit." << std::endl;
+}
+if (isalpha(c)) {
+    std::cout << "The character is an alphabetic letter." << std::endl;
+}
+if (isalnum(c)) {
+    std::cout << "The character is alphanumeric." << std::endl;
+}
+if (ispunct(c)) {
+    std::cout << "The character is a punctuation mark." << std::endl;
+}
+if (islower(c)) {
+    std::cout << "The character is a lowercase letter." << std::endl;
+}
+if (isupper(c)) {
+    std::cout << "The character is an uppercase letter." << std::endl;
+}
+
+int num = 123;
+std::string str = std::to_string(num);
+
+std::string str = "456";
+int num = std::stoi(str);
+
+// int to string through stringstream
+int num = 789;
+std::stringstream ss;
+ss << num;
+std::string str = ss.str();
+
+// string to int through stringstream
+std::string str = "321";
+std::stringstream ss(str);
+int num;
+ss >> num;
+
+std::string str = "9223372036854775807";  // Maximum value for int64_t
+int64_t num = std::stoll(str);
+
+std::string str = "123.45";
+float num = std::stof(str);
+
+std::string str = "123.456789";
+double num = std::stod(str);
+
 auto tp = std::string{};
 auto path = std::string{"/path/to/file"}
 std::stringstream ss{path};
@@ -208,9 +307,48 @@ int main() {
     return 0;
 }
 
+// set in C++
+auto it = s.lower_bound(10);
+auto it = s.upper_bound(10);
+// equal_range(const T& value): Returns a pair of iterators representing 
+// the range of elements that are equivalent to the given value.
+auto range = s.equal_range(10);
+
+// Check if set2 is a subset of set1
+if (std::includes(set1.begin(), set1.end(), set2.begin(), set2.end())) {
+    std::cout << "set2 is a subset of set1" << std::endl;
+}
+
+std::set<int> intersection;
+std::set_intersection(set1.begin(), set1.end(), set2.begin(), set2.end(),
+                        std::inserter(intersection, intersection.begin()));
+
+// Union
+std::set<int> unionSet;
+std::set_union(set1.begin(), set1.end(), set2.begin(), set2.end(),
+                std::inserter(unionSet, unionSet.begin()));
+        
+// Difference (set1 - set2)
+std::set<int> difference;
+std::set_difference(set1.begin(), set1.end(), set2.begin(), set2.end(),
+                    std::inserter(difference, difference.begin()));
 // giving unordered_map iterator of list so that map can keep track of 
 // items in list
 std::unordered_map<int, std::list<std::pair<int, int>>::iterator> cache;
+// another example to use ::iterator
+unordered_map<int, list<pair<int, int>>> frequencies;
+// key: original key, value: pair of frequency and the iterator corresponding key int the
+// frequencies map's list.
+unordered_map<int, pair<int, list<pair<int, int>>::iterator>> cache;
+
+
+void insert(int key, int frequency, int value) {
+    frequencies[frequency].push_back({key, value});
+    cache[key] = {frequency, --frequencies[frequency].end()};
+}
+
+
+
 std::list<std::pair<int, int>> lruList;
 // splice to move items in list
 lruList.splice(lruList.begin(), lruList, cache[key]);
@@ -240,11 +378,29 @@ auto max_it = std::max_element(points.begin(), points.end(),
                                     return std::get<1>(a) < std::get<1>(b);
                                 });
 
+// sorting
+std::vector<std::tuple<int, int>> vec = {
+    {1, 4},
+    {2, 3},
+    {3, 2},
+    {4, 1}
+};
+
+// Sort the vector by the second item in the tuple
+std::sort(vec.begin(), vec.end(), [](const auto& a, const auto& b) {
+    return std::get<1>(a) < std::get<1>(b);
+});
+
+auto it = std::find(vec.begin(), vec.end(), 3);
+std::reverse(vec.begin(), vec.end());
+int count = std::count(vec.begin(), vec.end(), 3);
+std::transform(vec.begin(), vec.end(), vec.begin(), [](int x) { return x * 2; });
+
 // max int in C++
 int max_int = std::numeric_limits<int>::max();
 
 // slicing string 
-string newWord = word.substr(0, i) + '*' + word.substr(i + 1, L);
+std::string newWord = word.substr(0, i) + '*' + word.substr(i + 1, L);
 
 // pass function to function in C++
 int add(int a, int b) {
@@ -352,3 +508,34 @@ public:
 private:
     std::vector<std::string> ingredients_;
 };
+
+// reverse array in C++
+std::vector<int> arr = {1, 2, 3, 4, 5, 6, 7};
+// reverse whole array
+std::reverse(arr.begin(), arr.end());
+// reverse portion of array
+std::reverse(arr.begin() + 2, arr.begin() + 6);
+
+// move data from map vector and set to each other
+std::map<int, std::string> myMap = {
+    {1, "one"},
+    {2, "two"},
+    {3, "three"}
+};
+
+// Convert to a set of pairs
+std::set<std::pair<int, std::string>> mySet(myMap.begin(), myMap.end());
+// Convert to a set of keys
+std::set<int> keySet;
+for (const auto& pair : myMap) {
+    keySet.insert(pair.first);
+}
+
+std::map<int, std::string> myMap = {
+    {1, "one"},
+    {2, "two"},
+    {3, "three"}
+};
+
+// Convert to a vector of pairs
+std::vector<std::pair<int, std::string>> myVector(myMap.begin(), myMap.end());
