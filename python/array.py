@@ -11,6 +11,29 @@
 # overlap happens when s1 <= e2 and s2 <= e1
 # interval will be min(e1, e2) - max(s1, s1) 
 
+
+# find interval intersection
+def intervalIntersection(self, firstList: List[List[int]], secondList: List[List[int]]) -> List[List[int]]:
+    ans = []
+    i = j = 0
+
+    while i < len(firstList) and j < len(secondList):
+        # Let's check if A[i] intersects B[j].
+        # lo - the startpoint of the intersection
+        # hi - the endpoint of the intersection
+        lo = max(firstList[i][0], secondList[j][0])
+        hi = min(firstList[i][1], secondList[j][1])
+        if lo <= hi:
+            ans.append([lo, hi])
+
+        # Remove the interval with the smallest endpoint
+        if firstList[i][1] < secondList[j][1]:
+            i += 1
+        else:
+            j += 1
+
+    return ans
+
 def minAvailableDuration(self, slots1: List[List[int]], slots2: List[List[int]], duration: int) -> List[int]:
     slots1.sort(), slots2.sort()
     i, j = 0, 0
@@ -465,7 +488,7 @@ def minimumAddedCoins(self, coins: List[int], target: int) -> int:
 
 # another reachability problem
 # queries means we are adding new connections between numbers
-# queries are either squential or one query covers a few previos ones
+# queries are either squential or one query covers a few previous ones
 # Input: n = 5, queries = [[2,4],[0,2],[0,4]]
 # initializing reach array as each number can reach the next element. This is initial state
 # a new query will cover a few queries, so need to update reachability 
