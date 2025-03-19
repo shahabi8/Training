@@ -383,6 +383,24 @@ def nextGreaterElement(self, nums1: List[int], nums2: List[int]) -> List[int]:
         output.append(nums2_dic[i])
     return output
 
+# building view to the right, next greater element to the right
+def findBuildings(self, heights: List[int]) -> List[int]:
+    n = len(heights)
+    answer = []
+    max_height = -1
+    
+    for current in reversed(range(n)):
+        # If there is no building higher (or equal) than the current one to its right,
+        # push it in the answer array.
+        if max_height < heights[current]:
+            answer.append(current)
+        
+            # Update max building till now.
+            max_height = heights[current]
+    
+    answer.reverse()
+    return answer
+
 # next greater and next smaller element in array
 # You are given a 0-indexed integer array nums of length n. You are initially standing at index 0. 
 # You can jump from index i to index j where i < j if:
