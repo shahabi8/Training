@@ -679,3 +679,31 @@ def candy(self, ratings: List[int]) -> int:
     for i in range(n):
         cnt += max(right[i], left[i])
     return cnt
+
+
+# bacis calculator
+def calculate(self, s):
+    """
+    :type s: str
+    :rtype: int
+    """
+    num, result, last_num, sign, num_str = 0, 0, 0, '+',''
+
+    for i, item in enumerate(s):
+        if item.isnumeric():
+            num_str = num_str + item
+
+        if item in '+-/*' or i == len(s) - 1:
+            num = int(num_str)
+            if sign in '+-':
+                result += last_num
+                last_num = num if sign == '+' else -num
+            elif sign == '*':
+                last_num*= num
+            else:
+                last_num= int(float(last_num) / num)
+            sign = item
+            num_str = ''
+    result += last_num
+
+    return result
